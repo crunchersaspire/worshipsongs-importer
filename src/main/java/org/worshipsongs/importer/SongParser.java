@@ -44,13 +44,13 @@ public class SongParser
 
     public String parseLyrics(String input)
     {
-        return parseAttribute1(input, "lyrics");
+        return parseAttribute(input, "lyrics");
     }
 
     public String parseAttribute(String input, String attributeName)
     {
         if (!input.isEmpty()) {
-            String attribute = findMatchingData(input, attributeName);
+            String attribute = (attributeName != "lyrics") ? findMatchingData(input, attributeName) : findMatchingData(input.split("title=")[0], attributeName);
             if (attribute.contains("=")) {
                 return attribute.split("=")[1];
             }
@@ -60,30 +60,7 @@ public class SongParser
 
     public String findMatchingData(String input, String attributeName)
     {
-        Pattern pattern = Pattern.compile(attributeName + "=.*");
-        Matcher matcher = pattern.matcher(input);
-        String matchingData = "";
-
-        while (matcher.find()) {
-            matchingData = matcher.group(0);
-        }
-        return matchingData;
-    }
-
-    public String parseAttribute1(String input, String attributeName)
-    {
-        if (!input.isEmpty()) {
-            String attribute = findMatchingData1(input.split("title=")[0], attributeName);
-            if (attribute.contains("=")) {
-                return attribute.split("=")[1];
-            }
-        }
-        return "";
-    }
-
-    public String findMatchingData1(String input, String attributeName)
-    {
-        Pattern pattern = Pattern.compile(attributeName + "=.*", Pattern.DOTALL);
+        Pattern pattern = (attributeName != "lyrics") ? Pattern.compile(attributeName + "=.*") : Pattern.compile(attributeName + "=.*", Pattern.DOTALL);
         Matcher matcher = pattern.matcher(input);
         String matchingData = "";
 
