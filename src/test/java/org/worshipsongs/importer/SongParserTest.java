@@ -15,6 +15,45 @@ public class SongParserTest
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
+    String lyrics = "And were this world all devils o’er,\n" +
+            "And watching to devour us,\n" +
+            "We lay it not to heart so sore;\n" +
+            "Not they can overpower us.\n" +
+            "And let the prince of ill\n" +
+            "Look grim as e’er he will,\n" +
+            "He harms us not a whit;\n" +
+            "For why? his doom is writ;\n" +
+            "A word shall quickly slay him.\n" +
+            "\n" +
+            "With force of arms we nothing can,\n" +
+            "Full soon were we down-ridden;\n" +
+            "But for us fights the proper Man,\n" +
+            "Whom God Himself hath bidden.\n" +
+            "Ask ye: Who is this same?\n" +
+            "Christ Jesus is His name,\n" +
+            "The Lord Sabaoth’s Son;\n" +
+            "He, and no other one,\n" +
+            "Shall conquer in the battle.\n" +
+            "\n" +
+            "And were this world all devils o’er,\n" +
+            "And watching to devour us,\n" +
+            "We lay it not to heart so sore;\n" +
+            "Not they can overpower us.\n" +
+            "And let the prince of ill\n" +
+            "Look grim as e’er he will,\n" +
+            "He harms us not a whit;\n" +
+            "For why? his doom is writ;\n" +
+            "A word shall quickly slay him.\n" +
+            "\n" +
+            "God’s word, for all their craft and force,\n" +
+            "One moment will not linger,\n" +
+            "But, spite of hell, shall have its course;\n" +
+            "’Tis written by His finger.\n" +
+            "And though they take our life,\n" +
+            "Goods, honour, children, wife,\n" +
+            "Yet is their profit small:\n" +
+            "These things shall vanish all;\n" +
+            "The city of God remaineth.";
     @Test
     public void testParseTitle1()
     {
@@ -97,115 +136,8 @@ public class SongParserTest
     @Test
     public void testParseLyrics()
     {
-        assertEquals("And were this world all devils o’er,\n" +
-                "And watching to devour us,\n" +
-                "We lay it not to heart so sore;\n" +
-                "Not they can overpower us.\n" +
-                "And let the prince of ill\n" +
-                "Look grim as e’er he will,\n" +
-                "He harms us not a whit;\n" +
-                "For why? his doom is writ;\n" +
-                "A word shall quickly slay him.\n" +
-                "With force of arms we nothing can,\n" +
-                "Full soon were we down-ridden;\n" +
-                "But for us fights the proper Man,\n" +
-                "Whom God Himself hath bidden.\n" +
-                "Ask ye: Who is this same?\n" +
-                "Christ Jesus is His name,\n" +
-                "The Lord Sabaoth’s Son;\n" +
-                "He, and no other one,\n" +
-                "Shall conquer in the battle.\n" +
-                "And were this world all devils o’er,\n" +
-                "And watching to devour us,\n" +
-                "We lay it not to heart so sore;\n" +
-                "Not they can overpower us.\n" +
-                "And let the prince of ill\n" +
-                "Look grim as e’er he will,\n" +
-                "He harms us not a whit;\n" +
-                "For why? his doom is writ;\n" +
-                "A word shall quickly slay him.\n" +
-                "God’s word, for all their craft and force,\n" +
-                "One moment will not linger,\n" +
-                "But, spite of hell, shall have its course;\n" +
-                "’Tis written by His finger.\n" +
-                "And though they take our life,\n" +
-                "Goods, honour, children, wife,\n" +
-                "Yet is their profit small:\n" +
-                "These things shall vanish all;\n" +
-                "The city of God remaineth.\n", parser.parseLyrics("lyrics=And were this world all devils o’er,\n" +
-                "And watching to devour us,\n" +
-                "We lay it not to heart so sore;\n" +
-                "Not they can overpower us.\n" +
-                "And let the prince of ill\n" +
-                "Look grim as e’er he will,\n" +
-                "He harms us not a whit;\n" +
-                "For why? his doom is writ;\n" +
-                "A word shall quickly slay him.\n" +
-                "With force of arms we nothing can,\n" +
-                "Full soon were we down-ridden;\n" +
-                "But for us fights the proper Man,\n" +
-                "Whom God Himself hath bidden.\n" +
-                "Ask ye: Who is this same?\n" +
-                "Christ Jesus is His name,\n" +
-                "The Lord Sabaoth’s Son;\n" +
-                "He, and no other one,\n" +
-                "Shall conquer in the battle.\n" +
-                "And were this world all devils o’er,\n" +
-                "And watching to devour us,\n" +
-                "We lay it not to heart so sore;\n" +
-                "Not they can overpower us.\n" +
-                "And let the prince of ill\n" +
-                "Look grim as e’er he will,\n" +
-                "He harms us not a whit;\n" +
-                "For why? his doom is writ;\n" +
-                "A word shall quickly slay him.\n" +
-                "God’s word, for all their craft and force,\n" +
-                "One moment will not linger,\n" +
-                "But, spite of hell, shall have its course;\n" +
-                "’Tis written by His finger.\n" +
-                "And though they take our life,\n" +
-                "Goods, honour, children, wife,\n" +
-                "Yet is their profit small:\n" +
-                "These things shall vanish all;\n" +
-                "The city of God remaineth.\n" +
-                "title="));
+        assertEquals(lyrics, parser.parseLyrics(lyrics +
+                "\ntitle="));
         assertEquals("", parser.parseLyrics(""));
-        assertEquals("", parser.parseLyrics("lyrics:And were this world all devils o’er,\n" +
-                "And watching to devour us,\n" +
-                "We lay it not to heart so sore;\n" +
-                "Not they can overpower us.\n" +
-                "And let the prince of ill\n" +
-                "Look grim as e’er he will,\n" +
-                "He harms us not a whit;\n" +
-                "For why? his doom is writ;\n" +
-                "A word shall quickly slay him.\n" +
-                "With force of arms we nothing can,\n" +
-                "Full soon were we down-ridden;\n" +
-                "But for us fights the proper Man,\n" +
-                "Whom God Himself hath bidden.\n" +
-                "Ask ye: Who is this same?\n" +
-                "Christ Jesus is His name,\n" +
-                "The Lord Sabaoth’s Son;\n" +
-                "He, and no other one,\n" +
-                "Shall conquer in the battle.\n" +
-                "And were this world all devils o’er,\n" +
-                "And watching to devour us,\n" +
-                "We lay it not to heart so sore;\n" +
-                "Not they can overpower us.\n" +
-                "And let the prince of ill\n" +
-                "Look grim as e’er he will,\n" +
-                "He harms us not a whit;\n" +
-                "For why? his doom is writ;\n" +
-                "A word shall quickly slay him.\n" +
-                "God’s word, for all their craft and force,\n" +
-                "One moment will not linger,\n" +
-                "But, spite of hell, shall have its course;\n" +
-                "’Tis written by His finger.\n" +
-                "And though they take our life,\n" +
-                "Goods, honour, children, wife,\n" +
-                "Yet is their profit small:\n" +
-                "These things shall vanish all;\n" +
-                "The city of God remaineth.\n" +
-                "title="));
     }
 }
