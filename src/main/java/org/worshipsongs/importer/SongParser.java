@@ -34,7 +34,7 @@ public class SongParser
 
     public String parseSearchLyrics(String input)
     {
-        return parseAttribute(input, "searchLyrics");
+        return input.toLowerCase();
     }
 
     public String parseVerseOrder(String input)
@@ -51,7 +51,7 @@ public class SongParser
     {
         if (!input.isEmpty()) {
             if(attributeName.equalsIgnoreCase("lyrics")) {
-                return input.split("\ntitle=")[0];
+                return input.split(".*=")[0].trim();
             }
             String attribute = findMatchingData(input, attributeName);
             if (attribute.contains("=")) {

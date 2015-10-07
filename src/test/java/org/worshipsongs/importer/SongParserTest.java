@@ -54,6 +54,46 @@ public class SongParserTest
             "Yet is their profit small:\n" +
             "These things shall vanish all;\n" +
             "The city of God remaineth.";
+
+    String searchLyrics = "and were this world all devils o’er,\n" +
+            "and watching to devour us,\n" +
+            "we lay it not to heart so sore;\n" +
+            "not they can overpower us.\n" +
+            "and let the prince of ill\n" +
+            "look grim as e’er he will,\n" +
+            "he harms us not a whit;\n" +
+            "for why? his doom is writ;\n" +
+            "a word shall quickly slay him.\n" +
+            "\n" +
+            "with force of arms we nothing can,\n" +
+            "full soon were we down-ridden;\n" +
+            "but for us fights the proper man,\n" +
+            "whom god himself hath bidden.\n" +
+            "ask ye: who is this same?\n" +
+            "christ jesus is his name,\n" +
+            "the lord sabaoth’s son;\n" +
+            "he, and no other one,\n" +
+            "shall conquer in the battle.\n" +
+            "\n" +
+            "and were this world all devils o’er,\n" +
+            "and watching to devour us,\n" +
+            "we lay it not to heart so sore;\n" +
+            "not they can overpower us.\n" +
+            "and let the prince of ill\n" +
+            "look grim as e’er he will,\n" +
+            "he harms us not a whit;\n" +
+            "for why? his doom is writ;\n" +
+            "a word shall quickly slay him.\n" +
+            "\n" +
+            "god’s word, for all their craft and force,\n" +
+            "one moment will not linger,\n" +
+            "but, spite of hell, shall have its course;\n" +
+            "’tis written by his finger.\n" +
+            "and though they take our life,\n" +
+            "goods, honour, children, wife,\n" +
+            "yet is their profit small:\n" +
+            "these things shall vanish all;\n" +
+            "the city of god remaineth.";
     @Test
     public void testParseTitle1()
     {
@@ -115,11 +155,7 @@ public class SongParserTest
     public void testParseSearchLyrics()
     {
         assertEquals("", parser.parseSearchLyrics(""));
-        assertEquals("Foo bar", parser.parseSearchLyrics("searchLyrics=Foo bar"));
-        assertEquals("", parser.parseSearchLyrics("searchLyrics:Foo bar"));
-        assertEquals("Foo bar", parser.parseSearchLyrics("barbarbar\n" +
-                "searchLyrics=Foo bar\n" +
-                "foofoo"));
+        assertEquals(searchLyrics, parser.parseSearchLyrics(lyrics));
     }
 
     @Test
@@ -138,6 +174,8 @@ public class SongParserTest
     {
         assertEquals(lyrics, parser.parseLyrics(lyrics +
                 "\ntitle="));
+        assertEquals(lyrics, parser.parseLyrics(lyrics +
+                "\nauthor="));
         assertEquals("", parser.parseLyrics(""));
     }
 }
