@@ -7,6 +7,10 @@ package org.worshipsongs.importer;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Scanner;
+
 import static org.junit.Assert.assertEquals;
 
 public class SongParserTest
@@ -15,85 +19,25 @@ public class SongParserTest
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-    String lyrics = "And were this world all devils o’er,\n" +
-            "And watching to devour us,\n" +
-            "We lay it not to heart so sore;\n" +
-            "Not they can overpower us.\n" +
-            "And let the prince of ill\n" +
-            "Look grim as e’er he will,\n" +
-            "He harms us not a whit;\n" +
-            "For why? his doom is writ;\n" +
-            "A word shall quickly slay him.\n" +
-            "\n" +
-            "With force of arms we nothing can,\n" +
-            "Full soon were we down-ridden;\n" +
-            "But for us fights the proper Man,\n" +
-            "Whom God Himself hath bidden.\n" +
-            "Ask ye: Who is this same?\n" +
-            "Christ Jesus is His name,\n" +
-            "The Lord Sabaoth’s Son;\n" +
-            "He, and no other one,\n" +
-            "Shall conquer in the battle.\n" +
-            "\n" +
-            "And were this world all devils o’er,\n" +
-            "And watching to devour us,\n" +
-            "We lay it not to heart so sore;\n" +
-            "Not they can overpower us.\n" +
-            "And let the prince of ill\n" +
-            "Look grim as e’er he will,\n" +
-            "He harms us not a whit;\n" +
-            "For why? his doom is writ;\n" +
-            "A word shall quickly slay him.\n" +
-            "\n" +
-            "God’s word, for all their craft and force,\n" +
-            "One moment will not linger,\n" +
-            "But, spite of hell, shall have its course;\n" +
-            "’Tis written by His finger.\n" +
-            "And though they take our life,\n" +
-            "Goods, honour, children, wife,\n" +
-            "Yet is their profit small:\n" +
-            "These things shall vanish all;\n" +
-            "The city of God remaineth.";
+    String lyrics = "[V1]\n" +
+            "Lord I lift Your name on high\n" +
+            "Lord I love to sing Your praises\n" +
+            "[O1]\n" +
+            "I’m so glad You're in my life\n" +
+            "I’m so glad You came to save us\n" +
+            " \n" +
+            "[C1]\n" +
+            "You came from heaven to earth \n" +
+            "To show the way\n" +
+            "[O2]\n" +
+            "From the earth to the cross, \n" +
+            "My debts to pay\n" +
+            "[O3]\n" +
+            "From the cross to the grave, \n" +
+            "From the grave to the sky\n" +
+            "Lord I lift Your name on high";
 
-    String searchLyrics = "and were this world all devils o’er,\n" +
-            "and watching to devour us,\n" +
-            "we lay it not to heart so sore;\n" +
-            "not they can overpower us.\n" +
-            "and let the prince of ill\n" +
-            "look grim as e’er he will,\n" +
-            "he harms us not a whit;\n" +
-            "for why? his doom is writ;\n" +
-            "a word shall quickly slay him.\n" +
-            "\n" +
-            "with force of arms we nothing can,\n" +
-            "full soon were we down-ridden;\n" +
-            "but for us fights the proper man,\n" +
-            "whom god himself hath bidden.\n" +
-            "ask ye: who is this same?\n" +
-            "christ jesus is his name,\n" +
-            "the lord sabaoth’s son;\n" +
-            "he, and no other one,\n" +
-            "shall conquer in the battle.\n" +
-            "\n" +
-            "and were this world all devils o’er,\n" +
-            "and watching to devour us,\n" +
-            "we lay it not to heart so sore;\n" +
-            "not they can overpower us.\n" +
-            "and let the prince of ill\n" +
-            "look grim as e’er he will,\n" +
-            "he harms us not a whit;\n" +
-            "for why? his doom is writ;\n" +
-            "a word shall quickly slay him.\n" +
-            "\n" +
-            "god’s word, for all their craft and force,\n" +
-            "one moment will not linger,\n" +
-            "but, spite of hell, shall have its course;\n" +
-            "’tis written by his finger.\n" +
-            "and though they take our life,\n" +
-            "goods, honour, children, wife,\n" +
-            "yet is their profit small:\n" +
-            "these things shall vanish all;\n" +
-            "the city of god remaineth.";
+    String searchLyrics = lyrics.toLowerCase();
     @Test
     public void testParseTitle1()
     {
@@ -152,13 +96,6 @@ public class SongParserTest
     }
 
     @Test
-    public void testParseSearchLyrics()
-    {
-        assertEquals("", parser.parseSearchLyrics(""));
-        assertEquals(searchLyrics, parser.parseSearchLyrics(lyrics));
-    }
-
-    @Test
     public void testParseVerseOrder()
     {
         assertEquals("", parser.parseVerseOrder(""));
@@ -176,6 +113,50 @@ public class SongParserTest
                 "\ntitle="));
         assertEquals(lyrics, parser.parseLyrics(lyrics +
                 "\nauthor="));
+        assertEquals(lyrics, parser.parseLyrics(lyrics));
         assertEquals("", parser.parseLyrics(""));
+    }
+
+    @Test
+    public void testParseSearchLyrics()
+    {
+        assertEquals("", parser.parseSearchLyrics(""));
+        assertEquals(searchLyrics, parser.parseSearchLyrics(lyrics));
+    }
+
+    @Test
+    public void testGetXmlLyrics()
+    {
+        StringBuilder expectedLyrics = new StringBuilder("");
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("sample_lyrics.xml").getFile());
+        try {
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                expectedLyrics.append(line).append("\n");
+            }
+            scanner.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(expectedLyrics.toString(), parser.getXmlLyrics(lyrics, "v1 v2 v3 v4"));
+    }
+
+    @Test
+    public void testParseVerses()
+    {
+        assertEquals("v1", parser.parseVerses("v1 v2 v3 v4")[0]);
+        assertEquals("v2", parser.parseVerses("v1 v2 v3 v4")[1]);
+        assertEquals("v3", parser.parseVerses("v1 v2 v3 v4")[2]);
+        assertEquals("v4", parser.parseVerses("v1 v2 v3 v4")[3]);
+    }
+
+    @Test
+    public void testParseTypeLabel()
+    {
+        assertEquals("v", parser.parseTypeLabel("v1")[1]);
+        assertEquals("1", parser.parseTypeLabel("v1")[2]);
     }
 }
