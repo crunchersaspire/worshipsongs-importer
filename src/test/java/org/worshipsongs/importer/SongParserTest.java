@@ -6,7 +6,10 @@ package org.worshipsongs.importer;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
+import org.w3c.dom.Document;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
@@ -140,23 +143,46 @@ public class SongParserTest
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        assertEquals(expectedLyrics.toString(), parser.getXmlLyrics(lyrics, "v1 v2 v3 v4"));
+        assertEquals(expectedLyrics.toString(), parser.getXmlLyrics(lyrics, "v1 o1 c1 o2 o3"));
     }
 
     @Test
-    public void testParseVerses()
+    public void testGetVerseTag()
     {
-        assertEquals("v1", parser.parseVerses("v1 v2 v3 v4")[0]);
-        assertEquals("v2", parser.parseVerses("v1 v2 v3 v4")[1]);
-        assertEquals("v3", parser.parseVerses("v1 v2 v3 v4")[2]);
-        assertEquals("v4", parser.parseVerses("v1 v2 v3 v4")[3]);
+        try {
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            Document document = docBuilder.newDocument();
+
+            assertEquals("<verse type=\"\" label=\"\"><![CDATA[data]]></verse>", parser.getVerseTag(document));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
-    public void testParseTypeLabel()
+    public void testParseVerseOrders()
     {
-        assertEquals("v", parser.parseTypeLabel("v1")[1]);
-        assertEquals("1", parser.parseTypeLabel("v1")[2]);
+        assertEquals("v1", parser.parseVerseOrders("v1 v2 v3 v4")[0]);
+        assertEquals("v2", parser.parseVerseOrders("v1 v2 v3 v4")[1]);
+        assertEquals("v3", parser.parseVerseOrders("v1 v2 v3 v4")[2]);
+        assertEquals("v4", parser.parseVerseOrders("v1 v2 v3 v4")[3]);
     }
+
+    @Test
+    public void testParseVerseType()
+    {
+        assertEquals("v", parser.parseVerseType("v1"));
+        assertEquals("c", parser.parseVerseType("c1"));
+    }
+
+    @Test
+    public void testParseVerseLabel()
+    {
+        assertEquals("1", parser.parseVerseType("v1"));
+        assertEquals("2", parser.parseVerseType("v2"));
+    }
+
+
 }
