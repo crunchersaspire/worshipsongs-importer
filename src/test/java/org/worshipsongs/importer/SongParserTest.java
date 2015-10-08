@@ -56,25 +56,7 @@ public class SongParserTest
             "From the cross to the grave, \n" +
             "From the grave to the sky\n" +
             "Lord I lift Your name on high";
-
-    String lyrics1 =
-            "Lord I lift Your name on high\n" +
-            "Lord I love to sing Your praises\n" +
-            "\n" +
-            "I’m so glad You're in my life\n" +
-            "I’m so glad You came to save us\n" +
-            " \n" +
-            "\n" +
-            "You came from heaven to earth\n" +
-            "To show the way\n" +
-            "\n" +
-            "From the earth to the cross,\n" +
-            "My debts to pay\n" +
-            "\n" +
-            "From the cross to the grave,\n" +
-            "From the grave to the sky\n" +
-            "Lord I lift Your name on high";
-
+    
     String searchLyrics = lyrics.toLowerCase();
 
     @Before
