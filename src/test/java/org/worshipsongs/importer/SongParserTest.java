@@ -57,6 +57,24 @@ public class SongParserTest
             "From the grave to the sky\n" +
             "Lord I lift Your name on high";
 
+    String lyrics1 =
+            "Lord I lift Your name on high\n" +
+            "Lord I love to sing Your praises\n" +
+            "\n" +
+            "I’m so glad You're in my life\n" +
+            "I’m so glad You came to save us\n" +
+            " \n" +
+            "\n" +
+            "You came from heaven to earth\n" +
+            "To show the way\n" +
+            "\n" +
+            "From the earth to the cross,\n" +
+            "My debts to pay\n" +
+            "\n" +
+            "From the cross to the grave,\n" +
+            "From the grave to the sky\n" +
+            "Lord I lift Your name on high";
+
     String searchLyrics = lyrics.toLowerCase();
 
     @Before
@@ -155,33 +173,27 @@ public class SongParserTest
     }
 
     @Test
-    public void testGetXmlLyrics()
+    public void testGetXmlLyrics() throws IOException
     {
-        String expectedLyrics = "";
         ClassLoader classLoader = getClass().getClassLoader();
-        try {
-            expectedLyrics = IOUtils.toString(classLoader.getResourceAsStream("sample_lyrics.xml"));
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        assertEquals(expectedLyrics.toString(), parser.getXmlLyrics(lyrics, "v1 o1 c1 o2 o3"));
+        String expectedLyrics = IOUtils.toString(classLoader.getResourceAsStream("sample_lyrics.xml"));
+        assertEquals(expectedLyrics.toString(), parser.getXmlLyrics(lyrics, "V1 O1 C1 O2 O3"));
     }
 
     @Test
     public void testGetVerseTag() throws TransformerException
     {
-        Element verseTag = parser.getVerseTag(document);
+        Element verseTag = parser.getVerseElement(document, "V1");
         document.appendChild(verseTag);
         transformer.setOutputProperty("omit-xml-declaration", "yes");
         transformer.transform(new DOMSource(document), new StreamResult(out));
-        assertEquals("<verse type=\"\" label=\"\"><![CDATA[data]]></verse>", out.toString());
+        assertEquals("<verse type=\"V\" label=\"1\"><![CDATA[data]]></verse>", out.toString());
     }
 
     @Test
     public void testGetLyricsTag() throws TransformerException
     {
-        Element lyricsTag = parser.getLyricsTag(document);
+        Element lyricsTag = parser.getLyricsElement(document);
         document.appendChild(lyricsTag);
         transformer.setOutputProperty("omit-xml-declaration", "yes");
         transformer.transform(new DOMSource(document), new StreamResult(out));
@@ -192,7 +204,7 @@ public class SongParserTest
     public void testGetSongTag() throws TransformerException
     {
         document.setXmlStandalone(true);
-        Element songTag = parser.getSongTag(document);
+        Element songTag = parser.getSongElement(document);
         document.appendChild(songTag);
         transformer.transform(new DOMSource(document), new StreamResult(out));
         assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><song version=\"1.0\"/>", out.toString());
@@ -201,31 +213,31 @@ public class SongParserTest
     @Test
     public void testParseVerseOrders()
     {
-        assertEquals("V1", parser.parseVerseOrders("V1 V2 V3 V4")[0]);
-        assertEquals("V2", parser.parseVerseOrders("V1 V2 V3 V4")[1]);
-        assertEquals("V3", parser.parseVerseOrders("V1 V2 V3 V4")[2]);
-        assertEquals("V4", parser.parseVerseOrders("V1 V2 V3 V4")[3]);
+        assertEquals("V1", parser.splitVerseOrder("V1 V2 V3 V4")[0]);
+        assertEquals("V2", parser.splitVerseOrder("V1 V2 V3 V4")[1]);
+        assertEquals("V3", parser.splitVerseOrder("V1 V2 V3 V4")[2]);
+        assertEquals("V4", parser.splitVerseOrder("V1 V2 V3 V4")[3]);
     }
 
     @Test
     public void testParseVerseType()
     {
-        assertEquals("V", parser.parseVerseType("V1"));
-        assertEquals("V", parser.parseVerseType("V2"));
-        assertEquals("C", parser.parseVerseType("C1"));
-        assertEquals("C", parser.parseVerseType("C2"));
-        assertEquals("O", parser.parseVerseType("O1"));
-        assertEquals("O", parser.parseVerseType("O2"));
+        assertEquals("v", parser.splitVerseType("V1"));
+        assertEquals("v", parser.splitVerseType("V2"));
+        assertEquals("c", parser.splitVerseType("C1"));
+        assertEquals("c", parser.splitVerseType("C2"));
+        assertEquals("o", parser.splitVerseType("O1"));
+        assertEquals("o", parser.splitVerseType("O2"));
     }
 
     @Test
     public void testParseVerseLabel()
     {
-        assertEquals("1", parser.parseVerseLabel("V1"));
-        assertEquals("2", parser.parseVerseLabel("V2"));
-        assertEquals("1", parser.parseVerseLabel("C1"));
-        assertEquals("2", parser.parseVerseLabel("C2"));
-        assertEquals("1", parser.parseVerseLabel("O1"));
-        assertEquals("2", parser.parseVerseLabel("O2"));
+        assertEquals("1", parser.splitVerseLabel("V1"));
+        assertEquals("2", parser.splitVerseLabel("V2"));
+        assertEquals("1", parser.splitVerseLabel("C1"));
+        assertEquals("2", parser.splitVerseLabel("C2"));
+        assertEquals("1", parser.splitVerseLabel("O1"));
+        assertEquals("2", parser.splitVerseLabel("O2"));
     }
 }

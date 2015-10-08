@@ -89,7 +89,7 @@ public class SongParser
 
     String getXmlLyrics(String lyrics, String verseOrder)
     {
-        String verseOrders[] = parseVerseOrders(verseOrder);
+        String verseOrders[] = splitVerseOrder(verseOrder);
         Writer out = new StringWriter();
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -97,15 +97,17 @@ public class SongParser
             Document document = docBuilder.newDocument();
             document.setXmlStandalone(true);
 
-            Element elementSong = getSongTag(document);
-            document.appendChild(elementSong);
+            Element songElement = getSongElement(document);
+            document.appendChild(songElement);
 
-            Element elementLyrics = getLyricsTag(document);
-            elementSong.appendChild(elementLyrics);
+            Element lyricsElement = getLyricsElement(document);
+            songElement.appendChild(lyricsElement);
 
-            Element elementVerse = getVerseTag(document);
-            elementLyrics.appendChild(elementVerse);
-
+            for (int i = 0; i < verseOrders.length; i++)
+            {
+                Element elementVerse = getVerseElement(document, verseOrders[i]);
+                lyricsElement.appendChild(elementVerse);
+            }
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.transform(new DOMSource(document), new StreamResult(out));
 
@@ -117,7 +119,7 @@ public class SongParser
         return out.toString();
     }
 
-    Element getSongTag(Document document)
+    Element getSongElement(Document document)
     {
         Element song = document.createElement("song");
         Attr version = document.createAttribute("version");
@@ -126,35 +128,35 @@ public class SongParser
         return song;
     }
 
-    Element getLyricsTag(Document document)
+    Element getLyricsElement(Document document)
     {
         return document.createElement("lyrics");
     }
 
-    Element getVerseTag(Document document)
+    Element getVerseElement(Document document, String verseOrders)
     {
         Element verse = document.createElement("verse");
         Attr type = document.createAttribute("type");
-        type.setValue("");
+        type.setValue(splitVerseType(verseOrders));
         verse.setAttributeNode(type);
         Attr label = document.createAttribute("label");
-        label.setValue("");
+        label.setValue(splitVerseLabel(verseOrders));
         verse.setAttributeNode(label);
         verse.appendChild(document.createCDATASection("data"));
         return verse;
     }
 
-    String[] parseVerseOrders(String verseOrder)
+    String[] splitVerseOrder(String verseOrder)
     {
         return verseOrder.split(" ");
     }
 
-    String parseVerseType(String verse)
+    String splitVerseType(String verse)
     {
-        return verse.split("")[1];
+        return verse.split("")[1].toLowerCase();
     }
 
-    String parseVerseLabel(String verse)
+    String splitVerseLabel(String verse)
     {
         return verse.split("")[2];
     }
