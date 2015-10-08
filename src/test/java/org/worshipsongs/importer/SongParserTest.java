@@ -4,14 +4,22 @@ package org.worshipsongs.importer;
  * Created by pitchumani on 10/5/15.
  */
 
+import com.sun.org.apache.xpath.internal.SourceTree;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Scanner;
 
 import static org.junit.Assert.assertEquals;
@@ -149,12 +157,67 @@ public class SongParserTest
     @Test
     public void testGetVerseTag()
     {
+        Writer out = new StringWriter();
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
             Document document = docBuilder.newDocument();
 
-            assertEquals("<verse type=\"\" label=\"\"><![CDATA[data]]></verse>", parser.getVerseTag(document));
+            Element verseTag = parser.getVerseTag(document);
+            document.appendChild(verseTag);
+
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty("omit-xml-declaration", "yes");
+            transformer.transform(new DOMSource(document), new StreamResult(out));
+            System.out.println(out.toString());
+
+            assertEquals("<verse type=\"\" label=\"\"><![CDATA[data]]></verse>", out.toString());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testGetLyricsTag()
+    {
+        Writer out = new StringWriter();
+        try {
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            Document document = docBuilder.newDocument();
+
+            Element lyricsTag = parser.getLyricsTag(document);
+            document.appendChild(lyricsTag);
+
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty("omit-xml-declaration", "yes");
+            transformer.transform(new DOMSource(document), new StreamResult(out));
+
+            assertEquals("<lyrics/>", out.toString());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testGetSongTag()
+    {
+        Writer out = new StringWriter();
+        try {
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            Document document = docBuilder.newDocument();
+            document.setXmlStandalone(true);
+
+            Element songTag = parser.getSongTag(document);
+            document.appendChild(songTag);
+
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.transform(new DOMSource(document), new StreamResult(out));
+            System.out.println(out.toString());
+            assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><song version=\"1.0\"/>", out.toString());
         }
         catch (Exception e) {
             e.printStackTrace();

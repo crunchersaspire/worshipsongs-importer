@@ -88,13 +88,15 @@ public class SongParser
 
     String getXmlLyrics(String lyrics, String verseOrder)
     {
+        //String verseOrders[] = parseVerseOrders(verseOrder);
         Writer out = new StringWriter();
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
             Document document = docBuilder.newDocument();
+            document.setXmlStandalone(true);
 
-            Element song = addSongTag(document);
+            Element song = getSongTag(document);
             document.appendChild(song);
 
             Element elementLyrics = getLyricsTag(document);
@@ -104,7 +106,6 @@ public class SongParser
             elementLyrics.appendChild(verse);
 
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            document.setXmlStandalone(true);
             transformer.transform(new DOMSource(document), new StreamResult(out));
 
         } catch (ParserConfigurationException pce) {
@@ -115,7 +116,7 @@ public class SongParser
         return out.toString();
     }
 
-    Element addSongTag(Document document)
+    Element getSongTag(Document document)
     {
         Element song = document.createElement("song");
         Attr version = document.createAttribute("version");
@@ -134,19 +135,17 @@ public class SongParser
 
     Element getVerseTag(Document document)
     {
-        //String verseOrders[] = parseVerseOrders(verseOrder);
+        Element verse = document.createElement("verse");
+        Attr type = document.createAttribute("type");
+        type.setValue("");
+        verse.setAttributeNode(type);
 
-            Element verse = document.createElement("verse");
-            Attr type = document.createAttribute("type");
-            type.setValue("");
-            verse.setAttributeNode(type);
+        Attr label = document.createAttribute("label");
+        label.setValue("");
+        verse.setAttributeNode(label);
+        verse.appendChild(document.createCDATASection("data"));
 
-            Attr label = document.createAttribute("label");
-            label.setValue("");
-            verse.setAttributeNode(label);
-            verse.appendChild(document.createCDATASection("data"));
-
-            return verse;
+        return verse;
     }
 
     String[] parseVerseOrders(String verseOrder)
