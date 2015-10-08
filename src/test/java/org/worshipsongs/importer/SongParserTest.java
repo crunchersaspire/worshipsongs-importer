@@ -176,7 +176,7 @@ public class SongParserTest
     public void testGetXmlLyrics() throws IOException
     {
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedLyrics = IOUtils.toString(classLoader.getResourceAsStream("sample_lyrics.xml"));
+        String expectedLyrics = IOUtils.toString(classLoader.getResourceAsStream("lord-i-lift-your-name-on-high.xml"));
         assertEquals(expectedLyrics.toString(), parser.getXmlLyrics(lyrics, "V1 O1 C1 O2 O3"));
     }
 
