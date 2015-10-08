@@ -90,6 +90,8 @@ public class SongParser
     String getXmlLyrics(String lyrics, String verseOrder)
     {
         String verseOrders[] = splitVerseOrder(verseOrder);
+        String verses[] = splitVerse(lyrics);
+
         Writer out = new StringWriter();
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -105,7 +107,7 @@ public class SongParser
 
             for (int i = 0; i < verseOrders.length; i++)
             {
-                Element elementVerse = getVerseElement(document, verseOrders[i]);
+                Element elementVerse = getVerseElement(document, verseOrders[i], verses[i+1]);
                 lyricsElement.appendChild(elementVerse);
             }
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
@@ -133,17 +135,17 @@ public class SongParser
         return document.createElement("lyrics");
     }
 
-    Element getVerseElement(Document document, String verseOrders)
+    Element getVerseElement(Document document, String verseOrders, String verse)
     {
-        Element verse = document.createElement("verse");
+        Element verseElement = document.createElement("verse");
         Attr type = document.createAttribute("type");
         type.setValue(splitVerseType(verseOrders));
-        verse.setAttributeNode(type);
+        verseElement.setAttributeNode(type);
         Attr label = document.createAttribute("label");
         label.setValue(splitVerseLabel(verseOrders));
-        verse.setAttributeNode(label);
-        verse.appendChild(document.createCDATASection("data"));
-        return verse;
+        verseElement.setAttributeNode(label);
+        verseElement.appendChild(document.createCDATASection(verse.trim()));
+        return verseElement;
     }
 
     String[] splitVerseOrder(String verseOrder)
@@ -159,5 +161,10 @@ public class SongParser
     String splitVerseLabel(String verse)
     {
         return verse.split("")[2];
+    }
+
+    String[] splitVerse(String lyrics)
+    {
+        return lyrics.split("\\[..\\]");
     }
 }

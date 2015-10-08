@@ -56,7 +56,7 @@ public class SongParserTest
             "From the cross to the grave, \n" +
             "From the grave to the sky\n" +
             "Lord I lift Your name on high";
-    
+
     String searchLyrics = lyrics.toLowerCase();
 
     @Before
@@ -165,11 +165,11 @@ public class SongParserTest
     @Test
     public void testGetVerseTag() throws TransformerException
     {
-        Element verseTag = parser.getVerseElement(document, "V1");
+        Element verseTag = parser.getVerseElement(document, "V1", "");
         document.appendChild(verseTag);
         transformer.setOutputProperty("omit-xml-declaration", "yes");
         transformer.transform(new DOMSource(document), new StreamResult(out));
-        assertEquals("<verse type=\"V\" label=\"1\"><![CDATA[data]]></verse>", out.toString());
+        assertEquals("<verse type=\"v\" label=\"1\"><![CDATA[data]]></verse>", out.toString());
     }
 
     @Test
@@ -221,5 +221,18 @@ public class SongParserTest
         assertEquals("2", parser.splitVerseLabel("C2"));
         assertEquals("1", parser.splitVerseLabel("O1"));
         assertEquals("2", parser.splitVerseLabel("O2"));
+    }
+
+    @Test
+    public void testParseVerse()
+    {
+        assertEquals("Lord I lift Your name on high\n" +
+                "Lord I love to sing Your praises", parser.splitVerse(lyrics)[1].trim());
+        assertEquals("I’m so glad You're in my life\n" +
+                "I’m so glad You came to save us", parser.splitVerse(lyrics)[2].trim());
+        assertEquals("You came from heaven to earth \n" +
+                "To show the way", parser.splitVerse(lyrics)[3].trim());
+        assertEquals("From the earth to the cross, \n" +
+                "My debts to pay", parser.splitVerse(lyrics)[4].trim());
     }
 }
