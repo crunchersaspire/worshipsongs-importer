@@ -21,11 +21,10 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class SongParserTest
 {
@@ -56,6 +55,32 @@ public class SongParserTest
             "From the cross to the grave, \n" +
             "From the grave to the sky\n" +
             "Lord I lift Your name on high";
+
+    String tamilLyrics = "[V1]\n" +
+            "இயேசு எனக்கு ஜீவன் தந்தாரே -4\n" +
+            "Yesu Enakku Jeevan Thanthaarey – 4\n" +
+            "[C1]\n" +
+            "துதி பாடல் நான் பாடி\n" +
+            "Thuthi Paadal Naan Paadi\n" +
+            "இயேசுவையே போற்றி\n" +
+            "Yesuvaiye Pottri\n" +
+            "[C1]\n" +
+            "என்றென்றும் வாழ்த்திடுவோம்\n" +
+            "Endrendrum Vaalthiduven\n" +
+            "அல்லேலுயா அமென் அல்லேலுயா\n" +
+            "Alleluya Amen Alleluya – 2\n" +
+            "[V2]\n" +
+            "சமாதானம் தந்தார் இயேசு - 4\n" +
+            "1.Samathaanam Thanthaar Yesu – 4\n" +
+            "[V3]\n" +
+            "புது வாழ்வு தந்தார் இயேசு -4\n" +
+            "2. Puthu Vaalvu Thanthaar Yesu - 4\n" +
+            "[V4]\n" +
+            "விடுதலை தந்தார் இயேசு -4\n" +
+            "3. Viduthalai Thanthaar Yesu - 4\n" +
+            "[V5]\n" +
+            "அபிஷேகம் தந்தார் இயேசு - 4\n" +
+            "4. Abishegam Thanthaar Yesu – 4";
 
     String searchLyrics = lyrics.toLowerCase();
 
@@ -163,7 +188,15 @@ public class SongParserTest
     }
 
     @Test
-    public void testGetVerseTag() throws TransformerException
+    public void testGetXmlLyrics1() throws IOException
+    {
+        ClassLoader classLoader = getClass().getClassLoader();
+        String expectedLyrics = IOUtils.toString(classLoader.getResourceAsStream("yesu-enakku-jeevan.xml"));
+        assertEquals(expectedLyrics.toString(), parser.getXmlLyrics(tamilLyrics, "V1 C1 C1 V2 V3 V4 V5"));
+    }
+
+    @Test
+    public void testGetVerseElement() throws TransformerException
     {
         Element verseTag = parser.getVerseElement(document, "V1", "");
         document.appendChild(verseTag);
@@ -173,7 +206,7 @@ public class SongParserTest
     }
 
     @Test
-    public void testGetLyricsTag() throws TransformerException
+    public void testGetLyricsElement() throws TransformerException
     {
         Element lyricsTag = parser.getLyricsElement(document);
         document.appendChild(lyricsTag);
@@ -183,7 +216,7 @@ public class SongParserTest
     }
 
     @Test
-    public void testGetSongTag() throws TransformerException
+    public void testGetSongElement() throws TransformerException
     {
         document.setXmlStandalone(true);
         Element songTag = parser.getSongElement(document);

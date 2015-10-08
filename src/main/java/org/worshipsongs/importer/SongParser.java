@@ -140,10 +140,10 @@ public class SongParser
         Element verseElement = document.createElement("verse");
         Attr type = document.createAttribute("type");
         type.setValue(splitVerseType(verseOrders));
-        verseElement.setAttributeNode(type);
+        verseElement.setAttributeNodeNS(type);
         Attr label = document.createAttribute("label");
         label.setValue(splitVerseLabel(verseOrders));
-        verseElement.setAttributeNode(label);
+        verseElement.setAttributeNodeNS(label);
         verseElement.appendChild(document.createCDATASection(verse.trim()));
         return verseElement;
     }
