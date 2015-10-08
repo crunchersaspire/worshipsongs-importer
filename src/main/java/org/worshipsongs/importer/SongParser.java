@@ -167,4 +167,9 @@ public class SongParser
     {
         return lyrics.split("\\[..\\]");
     }
+
+    public String parseSongBook(String input)
+    {
+        return parseAttribute(input, "songBook");
+    }
 }

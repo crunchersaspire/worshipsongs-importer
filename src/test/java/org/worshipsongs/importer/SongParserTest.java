@@ -34,6 +34,7 @@ public class SongParserTest
     Document document;
     Transformer transformer;
     Writer out = new StringWriter();
+    ClassLoader classLoader;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -91,6 +92,7 @@ public class SongParserTest
         docBuilder = docFactory.newDocumentBuilder();
         document = docBuilder.newDocument();
         transformer = TransformerFactory.newInstance().newTransformer();
+        classLoader = getClass().getClassLoader();
     }
 
     @Test
@@ -142,6 +144,7 @@ public class SongParserTest
                 "alternateTitle=Foo bar\n" +
                 "foofoo"));
     }
+
     @Test
     public void testParseSearchTitle()
     {
@@ -182,7 +185,6 @@ public class SongParserTest
     @Test
     public void testGetXmlLyrics() throws IOException
     {
-        ClassLoader classLoader = getClass().getClassLoader();
         String expectedLyrics = IOUtils.toString(classLoader.getResourceAsStream("lord-i-lift-your-name-on-high.xml"));
         assertEquals(expectedLyrics.toString(), parser.getXmlLyrics(lyrics, "V1 O1 C1 O2 O3"));
     }
@@ -190,7 +192,6 @@ public class SongParserTest
     @Test
     public void testGetXmlLyrics1() throws IOException
     {
-        ClassLoader classLoader = getClass().getClassLoader();
         String expectedLyrics = IOUtils.toString(classLoader.getResourceAsStream("yesu-enakku-jeevan.xml"));
         assertEquals(expectedLyrics.toString(), parser.getXmlLyrics(tamilLyrics, "V1 C1 C1 V2 V3 V4 V5"));
     }
@@ -267,5 +268,16 @@ public class SongParserTest
                 "To show the way", parser.splitVerse(lyrics)[3].trim());
         assertEquals("From the earth to the cross, \n" +
                 "My debts to pay", parser.splitVerse(lyrics)[4].trim());
+    }
+
+    @Test
+    public void testParseSongBook()
+    {
+        assertEquals("", parser.parseSongBook(""));
+        assertEquals("Foo bar", parser.parseSongBook("songBook=Foo bar"));
+        assertEquals("", parser.parseSongBook("songBook:Foo bar"));
+        assertEquals("Foo bar", parser.parseSongBook("barbarbar\n" +
+                "songBook=Foo bar\n" +
+                "foofoo"));
     }
 }
