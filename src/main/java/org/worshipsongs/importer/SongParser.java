@@ -6,6 +6,8 @@ package org.worshipsongs.importer;
 
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,7 +24,7 @@ import org.w3c.dom.Element;
 
 public class SongParser
 {
-    String lyrics, verseOrder;
+    final static Logger logger = Logger.getLogger(SongParser.class.getName());
 
     String parseTitle(String input)
     {
@@ -79,7 +81,6 @@ public class SongParser
         Pattern pattern = Pattern.compile(attributeName + "=.*");
         Matcher matcher = pattern.matcher(input);
         String matchingData = "";
-
         while (matcher.find()) {
             matchingData = matcher.group(0);
         }
@@ -96,22 +97,22 @@ public class SongParser
             Document document = docBuilder.newDocument();
             document.setXmlStandalone(true);
 
-            Element song = getSongTag(document);
-            document.appendChild(song);
+            Element elementSong = getSongTag(document);
+            document.appendChild(elementSong);
 
             Element elementLyrics = getLyricsTag(document);
-            song.appendChild(elementLyrics);
+            elementSong.appendChild(elementLyrics);
 
-            Element verse = getVerseTag(document);
-            elementLyrics.appendChild(verse);
+            Element elementVerse = getVerseTag(document);
+            elementLyrics.appendChild(elementVerse);
 
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.transform(new DOMSource(document), new StreamResult(out));
 
-        } catch (ParserConfigurationException pce) {
-            pce.printStackTrace();
-        } catch (TransformerException tfe) {
-            tfe.printStackTrace();
+        } catch (ParserConfigurationException e) {
+            logger.log(Level.SEVERE, "Exception occur", e);
+        } catch (TransformerException e) {
+            logger.log(Level.SEVERE, "Exception occur", e);
         }
         return out.toString();
     }
@@ -122,14 +123,12 @@ public class SongParser
         Attr version = document.createAttribute("version");
         version.setValue("1.0");
         song.setAttributeNode(version);
-
         return song;
     }
 
     Element getLyricsTag(Document document)
     {
         Element lyrics = document.createElement("lyrics");
-
         return lyrics;
     }
 
@@ -139,12 +138,10 @@ public class SongParser
         Attr type = document.createAttribute("type");
         type.setValue("");
         verse.setAttributeNode(type);
-
         Attr label = document.createAttribute("label");
         label.setValue("");
         verse.setAttributeNode(label);
         verse.appendChild(document.createCDATASection("data"));
-
         return verse;
     }
 
