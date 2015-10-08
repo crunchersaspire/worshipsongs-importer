@@ -225,5 +225,7 @@ public class SongParserTest
         assertEquals("2", parser.parseVerseLabel("V2"));
         assertEquals("1", parser.parseVerseLabel("C1"));
         assertEquals("2", parser.parseVerseLabel("C2"));
+        assertEquals("1", parser.parseVerseLabel("O1"));
+        assertEquals("2", parser.parseVerseLabel("O2"));
     }
 }

@@ -89,7 +89,7 @@ public class SongParser
 
     String getXmlLyrics(String lyrics, String verseOrder)
     {
-        //String verseOrders[] = parseVerseOrders(verseOrder);
+        String verseOrders[] = parseVerseOrders(verseOrder);
         Writer out = new StringWriter();
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -110,9 +110,9 @@ public class SongParser
             transformer.transform(new DOMSource(document), new StreamResult(out));
 
         } catch (ParserConfigurationException e) {
-            logger.log(Level.SEVERE, "Exception occur", e);
+            logger.log(Level.SEVERE, "Exception occurs in:", e);
         } catch (TransformerException e) {
-            logger.log(Level.SEVERE, "Exception occur", e);
+            logger.log(Level.SEVERE, "Exception occurs in:", e);
         }
         return out.toString();
     }
@@ -128,8 +128,7 @@ public class SongParser
 
     Element getLyricsTag(Document document)
     {
-        Element lyrics = document.createElement("lyrics");
-        return lyrics;
+        return document.createElement("lyrics");
     }
 
     Element getVerseTag(Document document)
