@@ -52,7 +52,13 @@ public class SongParser
 
     String parseSearchLyrics(String lyrics)
     {
-        return lyrics.toLowerCase();
+        String verses[] = splitVerse(lyrics);
+        String searchLyrics = "";
+
+        for(int i = 1; i < verses.length; i++) {
+            searchLyrics = searchLyrics.concat(verses[i].replace("\n", " ").replaceAll("[^a-zA-Z0-9\\ ]", ""));
+        }
+        return searchLyrics.toLowerCase().trim();
     }
 
     String parseVerseOrder(String input)
@@ -89,9 +95,6 @@ public class SongParser
 
     String getXmlLyrics(String lyrics, String verseOrder)
     {
-        String verseOrders[] = splitVerseOrder(verseOrder);
-        String verses[] = splitVerse(lyrics);
-
         Writer out = new StringWriter();
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -104,6 +107,9 @@ public class SongParser
 
             Element lyricsElement = getLyricsElement(document);
             songElement.appendChild(lyricsElement);
+
+            String verseOrders[] = splitVerseOrder(verseOrder);
+            String verses[] = splitVerse(lyrics);
 
             for (int i = 0; i < verseOrders.length; i++)
             {
@@ -155,12 +161,20 @@ public class SongParser
 
     String splitVerseType(String verse)
     {
-        return verse.split("")[1].toLowerCase();
+        String verseType = "";
+        if(!verse.isEmpty()) {
+            verseType = verse.split("")[1].toLowerCase();
+        }
+        return verseType;
     }
 
     String splitVerseLabel(String verse)
     {
-        return verse.split("")[2];
+        String verseLabel = "";
+        if(!verse.isEmpty()) {
+            verseLabel = verse.split("")[2];
+        }
+        return verseLabel;
     }
 
     String[] splitVerse(String lyrics)
@@ -168,8 +182,25 @@ public class SongParser
         return lyrics.split("\\[..\\]");
     }
 
-    public String parseSongBook(String input)
+    String parseSongBook(String input)
     {
         return parseAttribute(input, "songBook");
+    }
+
+    Song parseSong(String input)
+    {
+        Song song = new Song();
+
+        song.setTitle(parseTitle(input));
+        song.setAlternateTitle(parseAlternateTitle(input));
+        song.setAuthor(parseAuthor(input));
+        song.setVerseOrder(parseVerseOrder(input));
+        song.setSongBook(parseSongBook(input));
+        song.setLyrics(parseLyrics(input));
+        song.setXmlLyrics(getXmlLyrics(parseLyrics(input), parseVerseOrder(input)));
+        song.setSearchTitle(parseSearchTitle(parseTitle(input), parseAlternateTitle(input)));
+        song.setSearchLyrics(parseSearchLyrics(parseLyrics(input)));
+
+        return song;
     }
 }

@@ -1,0 +1,21 @@
+[V1]
+Lord I lift Your name on high
+Lord I love to sing Your praises
+[O1]
+I’m so glad You're in my life
+I’m so glad You came to save us
+[C1]
+You came from heaven to earth
+To show the way
+[O2]
+From the earth to the cross,
+My debts to pay
+[O3]
+From the cross to the grave,
+From the grave to the sky
+Lord I lift Your name on high
+
+title=Lord I lift Your Name
+author=Unknown
+alternateTitle=Lord I lift Your Name
+verseOrder=V1 O1 C1 O2 O3
