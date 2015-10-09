@@ -4,6 +4,7 @@ package org.worshipsongs.importer;
  * Created by pitchumani on 10/5/15.
  */
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.logging.Level;
@@ -18,6 +19,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -25,6 +27,25 @@ import org.w3c.dom.Element;
 public class SongParser
 {
     final static Logger logger = Logger.getLogger(SongParser.class.getName());
+    ClassLoader classLoader;
+
+    Song parseSong(String fileName) throws IOException
+    {
+        classLoader = getClass().getClassLoader();
+        String input = IOUtils.toString(classLoader.getResourceAsStream(fileName));
+        Song song = new Song();
+        song.setTitle(parseTitle(input));
+        song.setAlternateTitle(parseAlternateTitle(input));
+        song.setAuthor(parseAuthor(input));
+        song.setVerseOrder(parseVerseOrder(input));
+        song.setSongBook(parseSongBook(input));
+        song.setLyrics(parseLyrics(input));
+        song.setXmlLyrics(getXmlLyrics(parseLyrics(input), parseVerseOrder(input)));
+        song.setSearchTitle(parseSearchTitle(parseTitle(input), parseAlternateTitle(input)));
+        song.setSearchLyrics(parseSearchLyrics(parseLyrics(input)));
+
+        return song;
+    }
 
     String parseTitle(String input)
     {
@@ -56,7 +77,7 @@ public class SongParser
         String searchLyrics = "";
 
         for(int i = 1; i < verses.length; i++) {
-            searchLyrics = searchLyrics.concat(verses[i].replace("\n", " ").replaceAll("[^a-zA-Z0-9\\ ]", ""));
+            searchLyrics = searchLyrics.concat(verses[i].replace("\n", " ").replaceAll("[^a-zA-Z0-9\\s]", ""));
         }
         return searchLyrics.toLowerCase().trim();
     }
@@ -113,9 +134,10 @@ public class SongParser
 
             for (int i = 0; i < verseOrders.length; i++)
             {
-                Element elementVerse = getVerseElement(document, verseOrders[i], verses[i+1]);
-                lyricsElement.appendChild(elementVerse);
+                Element verseElement = getVerseElement(document, verseOrders[i], verses[i+1]);
+                lyricsElement.appendChild(verseElement);
             }
+
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.transform(new DOMSource(document), new StreamResult(out));
 
@@ -144,12 +166,13 @@ public class SongParser
     Element getVerseElement(Document document, String verseOrders, String verse)
     {
         Element verseElement = document.createElement("verse");
+
         Attr type = document.createAttribute("type");
         type.setValue(splitVerseType(verseOrders));
-        verseElement.setAttributeNodeNS(type);
+        verseElement.setAttributeNode(type);
         Attr label = document.createAttribute("label");
         label.setValue(splitVerseLabel(verseOrders));
-        verseElement.setAttributeNodeNS(label);
+        verseElement.setAttributeNode(label);
         verseElement.appendChild(document.createCDATASection(verse.trim()));
         return verseElement;
     }
@@ -179,28 +202,11 @@ public class SongParser
 
     String[] splitVerse(String lyrics)
     {
-        return lyrics.split("\\[..\\]");
+        return lyrics.split("\\[..\\]\\n");
     }
 
     String parseSongBook(String input)
     {
         return parseAttribute(input, "songBook");
-    }
-
-    Song parseSong(String input)
-    {
-        Song song = new Song();
-
-        song.setTitle(parseTitle(input));
-        song.setAlternateTitle(parseAlternateTitle(input));
-        song.setAuthor(parseAuthor(input));
-        song.setVerseOrder(parseVerseOrder(input));
-        song.setSongBook(parseSongBook(input));
-        song.setLyrics(parseLyrics(input));
-        song.setXmlLyrics(getXmlLyrics(parseLyrics(input), parseVerseOrder(input)));
-        song.setSearchTitle(parseSearchTitle(parseTitle(input), parseAlternateTitle(input)));
-        song.setSearchLyrics(parseSearchLyrics(parseLyrics(input)));
-
-        return song;
     }
 }
