@@ -7,6 +7,7 @@ package org.worshipsongs.importer;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.*;
@@ -19,6 +20,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -29,21 +31,26 @@ public class SongParser
     final static Logger logger = Logger.getLogger(SongParser.class.getName());
     ClassLoader classLoader;
 
-    Song parseSong(String fileName) throws IOException
+    Song parseSongs(String fileName) throws IOException
     {
         classLoader = getClass().getClassLoader();
-        String input = IOUtils.toString(classLoader.getResourceAsStream(fileName));
         Song song = new Song();
-        song.setTitle(parseTitle(input));
-        song.setAlternateTitle(parseAlternateTitle(input));
-        song.setAuthor(parseAuthor(input));
-        song.setVerseOrder(parseVerseOrder(input));
-        song.setSongBook(parseSongBook(input));
-        song.setLyrics(parseLyrics(input));
-        song.setXmlLyrics(getXmlLyrics(parseLyrics(input), parseVerseOrder(input)));
-        song.setSearchTitle(parseSearchTitle(parseTitle(input), parseAlternateTitle(input)));
-        song.setSearchLyrics(parseSearchLyrics(parseLyrics(input)));
 
+        List<String> files = IOUtils.readLines(classLoader.getResourceAsStream("songs/"), Charsets.UTF_8);
+        for(int i= 0; i < files.size(); i++)
+        {
+            String input = IOUtils.toString(classLoader.getResourceAsStream(files.get(i)));
+            song.setTitle(parseTitle(input));
+            song.setAlternateTitle(parseAlternateTitle(input));
+            song.setAuthor(parseAuthor(input));
+            song.setVerseOrder(parseVerseOrder(input));
+            song.setSongBook(parseSongBook(input));
+            song.setLyrics(parseLyrics(input));
+            song.setXmlLyrics(getXmlLyrics(parseLyrics(input), parseVerseOrder(input)));
+            song.setSearchTitle(parseSearchTitle(parseTitle(input), parseAlternateTitle(input)));
+            song.setSearchLyrics(parseSearchLyrics(parseLyrics(input)));
+            System.out.println("Parsed "+i+" Songs");
+        }
         return song;
     }
 

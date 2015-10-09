@@ -303,7 +303,7 @@ public class SongParserTest
         song.setSearchTitle((song.getTitle()+"@"+song.getAlternateTitle()).toLowerCase());
         song.setSearchLyrics(searchLyrics);
 
-        Song song1 = parser.parseSong("song.txt");
+        Song song1 = parser.parseSongs("song.txt");
         assertTrue(song.equals(song1));
     }
 }

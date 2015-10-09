@@ -4,8 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -56,7 +54,7 @@ public class SongTest
         song.setXmlLyrics(xmlLyrics);
         song.setSearchTitle((song.getTitle()+"@"+song.getAlternateTitle()).toLowerCase());
         song.setSearchLyrics(searchLyrics);
-        song1 = parser.parseSong("song.txt");
+        song1 = parser.parseSongs("song.txt");
     }
 
     @Test
@@ -71,7 +69,7 @@ public class SongTest
         song.setSongBook("Bar");
         assertFalse(song.equals(song1));
     }
-    
+
     @Test
     public void testToString()
     {
