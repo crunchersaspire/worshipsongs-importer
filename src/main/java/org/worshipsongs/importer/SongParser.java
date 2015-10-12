@@ -4,11 +4,11 @@ package org.worshipsongs.importer;
  * Created by pitchumani on 10/5/15.
  */
 
-import java.io.*;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.*;
+import org.apache.commons.io.IOUtils;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -17,26 +17,29 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.IOUtils;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
-import static java.util.logging.Level.WARNING;
 
 public class SongParser
 {
     final static Logger logger = Logger.getLogger(SongParser.class.getName());
     ClassLoader classLoader;
+    Song song = new Song();
 
     Song parseSong(String fileName) throws IOException
     {
         classLoader = getClass().getClassLoader();
-        Song song = new Song();
 
         String input = IOUtils.toString(classLoader.getResourceAsStream(fileName));
         song.setTitle(parseTitle(input));
@@ -51,18 +54,18 @@ public class SongParser
         return song;
     }
 
-    Song parseSongs(String directory)
+    List parseSongs(String directory)
     {
         classLoader = getClass().getClassLoader();
         Song song = new Song();
+        List list = new ArrayList();
         int i;
-        String input = "";
         File[] files = new File(directory).listFiles();
         for(i = 0; i < files.length; i++)
         {
             try {
                 logger.log(INFO, "Reading the file : "+files[i].getName() +"\n");
-                input = IOUtils.toString(classLoader.getResourceAsStream(files[i].getName()));
+                String input = IOUtils.toString(classLoader.getResourceAsStream(files[i].getName()));
                 logger.log(INFO, "Parsing the file : "+files[i].getName() +"\n");
                 song.setTitle(parseTitle(input));
                 song.setAlternateTitle(parseAlternateTitle(input));
@@ -74,12 +77,13 @@ public class SongParser
                 song.setSearchTitle(parseSearchTitle(parseTitle(input), parseAlternateTitle(input)));
                 song.setSearchLyrics(parseSearchLyrics(parseLyrics(input)));
                 logger.log(INFO, "Parsed the file : " + files[i].getName() +"\n");
+                list.add(song.getTitle());
             } catch (Exception e) {
-                logger.log(SEVERE, "Problem while parsing/reading the file" + e +"\n");
+                logger.log(SEVERE, "Problem while parsing/reading the file " + e +"\n");
             }
         }
         logger.log(INFO, "Parsed "+ i +" files");
-        return song;
+        return list;
     }
 
     String parseTitle(String input)
@@ -221,7 +225,7 @@ public class SongParser
     {
         String verseType = "";
         if(!verse.isEmpty()) {
-            verseType = verse.split("")[1].toLowerCase();
+            verseType = verse.split("(?!^)")[0].toLowerCase();
         }
         return verseType;
     }
@@ -230,7 +234,7 @@ public class SongParser
     {
         String verseLabel = "";
         if(!verse.isEmpty()) {
-            verseLabel = verse.split("")[2];
+            verseLabel = verse.split("(?!^)")[1];
         }
         return verseLabel;
     }

@@ -19,3 +19,4 @@ title=Lord I lift Your Name
 author=Unknown
 alternateTitle=Lord I lift Your Name
 verseOrder=V1 O1 C1 O2 O3
+songBook=Foo

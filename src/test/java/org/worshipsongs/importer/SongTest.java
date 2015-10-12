@@ -49,12 +49,12 @@ public class SongTest
         song.setAlternateTitle("Lord I lift Your Name");
         song.setAuthor("Unknown");
         song.setVerseOrder("V1 O1 C1 O2 O3");
-        song.setSongBook("");
+        song.setSongBook("Foo");
         song.setLyrics(lyrics);
         song.setXmlLyrics(xmlLyrics);
         song.setSearchTitle((song.getTitle()+"@"+song.getAlternateTitle()).toLowerCase());
         song.setSearchLyrics(searchLyrics);
-        song1 = parser.parseSongs("song.txt");
+        song1 = parser.parseSong("song.txt");
     }
 
     @Test
@@ -66,7 +66,7 @@ public class SongTest
     @Test
     public void testNotEquals() throws IOException
     {
-        song.setSongBook("Bar");
+        song.setAuthor("Bar");
         assertFalse(song.equals(song1));
     }
 
@@ -74,7 +74,5 @@ public class SongTest
     public void testToString()
     {
         assertEquals("Title --> Lord I lift Your Name", song.toString());
-        assertNotEquals("author:Unknown", song.toString());
     }
-
 }
