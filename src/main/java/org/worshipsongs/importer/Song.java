@@ -109,14 +109,13 @@ public class Song
     public boolean equals(Object obj)
     {
         Song song = (Song) obj;
-        return ((song.title.equals(this.title)) && (song.alternateTitle.equals(this.alternateTitle)) && (song.author.equals(this.author))
-                && (song.verseOrder.equals(this.verseOrder)) && (song.songBook.equals(this.songBook)) && (song.lyrics.equals(this.lyrics))
-                && (song.xmlLyrics.equals(this.xmlLyrics)) && (song.searchTitle.equals(this.searchTitle)) && (song.searchLyrics.equals(this.searchLyrics)));
+        return ((song.title.equals(this.title)) && (song.author.equals(this.author)));
     }
 
     @Override
     public String toString()
     {
-        return "author="+this.getAuthor();
+        return "Title --> "+this.getTitle();
     }
+
 }

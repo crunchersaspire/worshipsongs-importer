@@ -73,7 +73,8 @@ public class SongTest
     @Test
     public void testToString()
     {
-        assertEquals("author=Unknown", song.toString());
+        assertEquals("Title --> Lord I lift Your Name", song.toString());
         assertNotEquals("author:Unknown", song.toString());
     }
+
 }

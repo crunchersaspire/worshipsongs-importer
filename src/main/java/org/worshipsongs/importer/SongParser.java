@@ -4,9 +4,7 @@ package org.worshipsongs.importer;
  * Created by pitchumani on 10/5/15.
  */
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,31 +24,61 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
+
 public class SongParser
 {
     final static Logger logger = Logger.getLogger(SongParser.class.getName());
     ClassLoader classLoader;
 
-    Song parseSongs(String fileName) throws IOException
+    Song parseSong(String fileName) throws IOException
     {
         classLoader = getClass().getClassLoader();
         Song song = new Song();
 
-        List<String> files = IOUtils.readLines(classLoader.getResourceAsStream("songs/"), Charsets.UTF_8);
-        for(int i= 0; i < files.size(); i++)
+        String input = IOUtils.toString(classLoader.getResourceAsStream(fileName));
+        song.setTitle(parseTitle(input));
+        song.setAlternateTitle(parseAlternateTitle(input));
+        song.setAuthor(parseAuthor(input));
+        song.setVerseOrder(parseVerseOrder(input));
+        song.setSongBook(parseSongBook(input));
+        song.setLyrics(parseLyrics(input));
+        song.setXmlLyrics(getXmlLyrics(parseLyrics(input), parseVerseOrder(input)));
+        song.setSearchTitle(parseSearchTitle(parseTitle(input), parseAlternateTitle(input)));
+        song.setSearchLyrics(parseSearchLyrics(parseLyrics(input)));
+        return song;
+    }
+
+    Song parseSongs(String directory)
+    {
+        classLoader = getClass().getClassLoader();
+        Song song = new Song();
+        int i;
+        String input = "";
+        File[] files = new File(directory).listFiles();
+        for(i = 0; i < files.length; i++)
         {
-            String input = IOUtils.toString(classLoader.getResourceAsStream(files.get(i)));
-            song.setTitle(parseTitle(input));
-            song.setAlternateTitle(parseAlternateTitle(input));
-            song.setAuthor(parseAuthor(input));
-            song.setVerseOrder(parseVerseOrder(input));
-            song.setSongBook(parseSongBook(input));
-            song.setLyrics(parseLyrics(input));
-            song.setXmlLyrics(getXmlLyrics(parseLyrics(input), parseVerseOrder(input)));
-            song.setSearchTitle(parseSearchTitle(parseTitle(input), parseAlternateTitle(input)));
-            song.setSearchLyrics(parseSearchLyrics(parseLyrics(input)));
-            System.out.println("Parsed "+i+" Songs");
+            try {
+                logger.log(INFO, "Reading the file : "+files[i].getName() +"\n");
+                input = IOUtils.toString(classLoader.getResourceAsStream(files[i].getName()));
+                logger.log(INFO, "Parsing the file : "+files[i].getName() +"\n");
+                song.setTitle(parseTitle(input));
+                song.setAlternateTitle(parseAlternateTitle(input));
+                song.setAuthor(parseAuthor(input));
+                song.setVerseOrder(parseVerseOrder(input));
+                song.setSongBook(parseSongBook(input));
+                song.setLyrics(parseLyrics(input));
+                song.setXmlLyrics(getXmlLyrics(parseLyrics(input), parseVerseOrder(input)));
+                song.setSearchTitle(parseSearchTitle(parseTitle(input), parseAlternateTitle(input)));
+                song.setSearchLyrics(parseSearchLyrics(parseLyrics(input)));
+                logger.log(INFO, "Parsed the file : " + files[i].getName() +"\n");
+            } catch (Exception e) {
+                logger.log(SEVERE, "Problem while parsing/reading the file" + e +"\n");
+            }
         }
+        logger.log(INFO, "Parsed "+ i +" files");
         return song;
     }
 
