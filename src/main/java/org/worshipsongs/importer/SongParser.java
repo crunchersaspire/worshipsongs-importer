@@ -17,10 +17,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -57,7 +54,9 @@ public class SongParser
     List parseSongs(String directory)
     {
         classLoader = getClass().getClassLoader();
-        Song song = new Song();
+        BufferedReader bufferedReader = null;
+        String input="";
+        StringBuffer stringBuffer = new StringBuffer();
         List list = new ArrayList();
         int i;
         File[] files = new File(directory).listFiles();
@@ -65,24 +64,28 @@ public class SongParser
         {
             try {
                 logger.log(INFO, "Reading the file : "+files[i].getName() +"\n");
-                String input = IOUtils.toString(classLoader.getResourceAsStream(files[i].getName()));
+                bufferedReader = new BufferedReader(new FileReader(directory+"/"+files[i].getName()));
+                while ((input = bufferedReader.readLine()) != null) {
+                    stringBuffer.append(input);
+                    stringBuffer.append("\n");
+                }
                 logger.log(INFO, "Parsing the file : "+files[i].getName() +"\n");
-                song.setTitle(parseTitle(input));
-                song.setAlternateTitle(parseAlternateTitle(input));
-                song.setAuthor(parseAuthor(input));
-                song.setVerseOrder(parseVerseOrder(input));
-                song.setSongBook(parseSongBook(input));
-                song.setLyrics(parseLyrics(input));
-                song.setXmlLyrics(getXmlLyrics(parseLyrics(input), parseVerseOrder(input)));
-                song.setSearchTitle(parseSearchTitle(parseTitle(input), parseAlternateTitle(input)));
-                song.setSearchLyrics(parseSearchLyrics(parseLyrics(input)));
+                song.setTitle(parseTitle(stringBuffer.toString()));
+                song.setAlternateTitle(parseAlternateTitle(stringBuffer.toString()));
+                song.setAuthor(parseAuthor(stringBuffer.toString()));
+                song.setVerseOrder(parseVerseOrder(stringBuffer.toString()));
+                song.setSongBook(parseSongBook(stringBuffer.toString()));
+                song.setLyrics(parseLyrics(stringBuffer.toString()));
+                song.setXmlLyrics(getXmlLyrics(parseLyrics(stringBuffer.toString()), parseVerseOrder(stringBuffer.toString())));
+                song.setSearchTitle(parseSearchTitle(parseTitle(stringBuffer.toString()), parseAlternateTitle(stringBuffer.toString())));
+                song.setSearchLyrics(parseSearchLyrics(parseLyrics(stringBuffer.toString())));
                 logger.log(INFO, "Parsed the file : " + files[i].getName() +"\n");
-                list.add(song.getTitle());
+                list.add(song.toString());
             } catch (Exception e) {
                 logger.log(SEVERE, "Problem while parsing/reading the file " + e +"\n");
             }
         }
-        logger.log(INFO, "Parsed "+ i +" files");
+        logger.log(INFO, "Parsed "+ i +" files.");
         return list;
     }
 

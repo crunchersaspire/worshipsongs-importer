@@ -19,5 +19,7 @@ public class ParseSong
         else {
             System.out.println("Songs directory argument should not be empty");
         }
+        for (int i = 0; i < title.size(); i++)
+            System.out.println(title.get(i));
     }
 }
