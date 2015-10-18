@@ -6,6 +6,7 @@ package org.worshipsongs.importer;
 public class Song
 {
     private String title;
+    private String topic;
     private String alternateTitle;
     private String author;
     private String verseOrder;
@@ -105,6 +106,13 @@ public class Song
         this.searchLyrics = searchLyrics;
     }
 
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
     @Override
     public boolean equals(Object obj)
     {
@@ -117,5 +125,4 @@ public class Song
     {
         return "Title --> "+this.getTitle();
     }
-
 }

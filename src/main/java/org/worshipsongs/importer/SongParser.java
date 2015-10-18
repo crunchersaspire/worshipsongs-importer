@@ -20,11 +20,11 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 
@@ -40,6 +40,7 @@ public class SongParser
 
         String input = IOUtils.toString(classLoader.getResourceAsStream(fileName));
         song.setTitle(parseTitle(input));
+        song.setTopic(parseTopic(input));
         song.setAlternateTitle(parseAlternateTitle(input));
         song.setAuthor(parseAuthor(input));
         song.setVerseOrder(parseVerseOrder(input));
@@ -71,6 +72,7 @@ public class SongParser
                 }
                 logger.log(INFO, "Parsing the file : "+files[i].getName() +"\n");
                 song.setTitle(parseTitle(stringBuffer.toString()));
+                song.setTopic(parseTopic(stringBuffer.toString()));
                 song.setAlternateTitle(parseAlternateTitle(stringBuffer.toString()));
                 song.setAuthor(parseAuthor(stringBuffer.toString()));
                 song.setVerseOrder(parseVerseOrder(stringBuffer.toString()));
@@ -250,5 +252,9 @@ public class SongParser
     String parseSongBook(String input)
     {
         return parseAttribute(input, "songBook");
+    }
+
+    public String parseTopic(String input) {
+        return parseAttribute(input, "topic");
     }
 }
