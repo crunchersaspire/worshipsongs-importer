@@ -21,7 +21,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.*;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -294,14 +296,14 @@ public class SongParserTest
         Song song = new Song();
         song.setTitle("Lord I lift Your Name");
         song.setAlternateTitle("Lord I lift Your Name");
-        song.setAuthor("Unknown");
+        //song.setAuthor("Unknown");
         song.setVerseOrder("V1 O1 C1 O2 O3");
-        song.setSongBook("");
+        //song.setSongBook("");
         song.setLyrics(lyrics);
         song.setXmlLyrics(xmlLyrics);
         song.setSearchTitle((song.getTitle()+"@"+song.getAlternateTitle()).toLowerCase());
         song.setSearchLyrics(searchLyrics);
-        song.setTopic("Foo");
+        //song.setTopic("Foo");
 
         Song song1 = parser.parseSong("song.txt");
         assertTrue(song.equals(song1));

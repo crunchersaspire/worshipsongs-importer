@@ -7,9 +7,7 @@ public class Song
 {
     private String title;
     private String alternateTitle;
-    private String author;
     private String verseOrder;
-    private String songBook;
     private String lyrics;
     private String xmlLyrics;
     private String searchTitle;
@@ -43,16 +41,6 @@ public class Song
     public void setVerseOrder(String verseOrder)
     {
         this.verseOrder = verseOrder;
-    }
-
-    public String getSongBook()
-    {
-        return songBook;
-    }
-
-    public void setSongBook(String songBook)
-    {
-        this.songBook = songBook;
     }
 
     public String getLyrics()
@@ -99,7 +87,7 @@ public class Song
     public boolean equals(Object obj)
     {
         Song song = (Song) obj;
-        return ((song.title.equals(this.title)) && (song.author.equals(this.author)));
+        return ((song.title.equals(this.title)));
     }
 
     @Override

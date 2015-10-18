@@ -36,10 +36,11 @@ public class SongParser
     Song song = new Song();
     Topic topic = new Topic();
     Author author = new Author();
+    SongBook  songBook = new SongBook();
     AuthorDao authorDao = new AuthorDao();
     TopicDao topicDao = new TopicDao();
+    SongBookDao songBookDao = new SongBookDao();
     Connection connection;
-    int author_id, topic_id;
 
     Song parseSong(String fileName) throws IOException
     {
@@ -51,7 +52,7 @@ public class SongParser
         song.setAlternateTitle(parseAlternateTitle(input));
         author.setAuthor(parseAuthor(input));
         song.setVerseOrder(parseVerseOrder(input));
-        song.setSongBook(parseSongBook(input));
+        songBook.setSongBook(parseSongBook(input));
         song.setLyrics(parseLyrics(input));
         song.setXmlLyrics(getXmlLyrics(parseLyrics(input), parseVerseOrder(input)));
         song.setSearchTitle(parseSearchTitle(parseTitle(input), parseAlternateTitle(input)));
@@ -84,7 +85,7 @@ public class SongParser
                 song.setAlternateTitle(parseAlternateTitle(stringBuffer.toString()));
                 author.setAuthor(parseAuthor(stringBuffer.toString()));
                 song.setVerseOrder(parseVerseOrder(stringBuffer.toString()));
-                song.setSongBook(parseSongBook(stringBuffer.toString()));
+                songBook.setSongBook(parseSongBook(stringBuffer.toString()));
                 song.setLyrics(parseLyrics(stringBuffer.toString()));
                 song.setXmlLyrics(getXmlLyrics(parseLyrics(stringBuffer.toString()), parseVerseOrder(stringBuffer.toString())));
                 song.setSearchTitle(parseSearchTitle(parseTitle(stringBuffer.toString()), parseAlternateTitle(stringBuffer.toString())));
@@ -93,8 +94,9 @@ public class SongParser
                 if(!authorDao.getEnvironmentVariable("OPENLP_HOME").isEmpty())
                 {
                     connection = authorDao.connectDb(authorDao.getEnvironmentVariable("OPENLP_HOME"));
-                    author_id = authorDao.getAuthorId(connection, parseAuthor(stringBuffer.toString()));
-                    topic_id = topicDao.getAuthorId(connection, parseTopic(stringBuffer.toString()));
+                    author.setId(authorDao.getAuthorId(connection, parseAuthor(stringBuffer.toString())));
+                    topic.setId(topicDao.getAuthorId(connection, parseTopic(stringBuffer.toString())));
+                    songBook.setId(songBookDao.getAuthorId(connection, parseSongBook(stringBuffer.toString())));
                 }
 
                 logger.log(INFO, "Parsed the file : " + files[i].getName() +"\n");

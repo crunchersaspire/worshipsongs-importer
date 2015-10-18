@@ -47,9 +47,9 @@ public class SongTest
     {
         song.setTitle("Lord I lift Your Name");
         song.setAlternateTitle("Lord I lift Your Name");
-        song.setAuthor("Unknown");
+//        song.setAuthor("Unknown");
         song.setVerseOrder("V1 O1 C1 O2 O3");
-        song.setSongBook("Foo");
+//        song.setSongBook("Foo");
         song.setLyrics(lyrics);
         song.setXmlLyrics(xmlLyrics);
         song.setSearchTitle((song.getTitle()+"@"+song.getAlternateTitle()).toLowerCase());
@@ -66,7 +66,7 @@ public class SongTest
     @Test
     public void testNotEquals() throws IOException
     {
-        song.setAuthor("Bar");
+        song.setTitle("Bar");
         assertFalse(song.equals(song1));
     }
 
