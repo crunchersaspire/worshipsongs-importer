@@ -1,9 +1,6 @@
 package org.worshipsongs.importer;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  * Created by Pitchu on 10/18/2015.
@@ -38,10 +35,26 @@ public class AuthorDao {
             id = resultSet.getInt("id");
             resultSet.close();
             statement.close();
+            connection.close();
         }
         catch (Exception e) {
             e.printStackTrace();
         }
         return id;
+    }
+
+    public void insertAuthor(Connection connection, Author author, int songId)
+    {
+        try {
+            String query = "insert into authors_songs (author_id, song_id) values (?, ?)";
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setInt(1, author.getId());
+            ps.setInt(2, songId);
+            ps.executeUpdate();
+            connection.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

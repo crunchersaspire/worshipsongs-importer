@@ -40,6 +40,7 @@ public class SongParser
     AuthorDao authorDao = new AuthorDao();
     TopicDao topicDao = new TopicDao();
     SongBookDao songBookDao = new SongBookDao();
+    SongDao songDao = new SongDao();
     Connection connection;
 
     Song parseSong(String fileName) throws IOException
@@ -67,7 +68,7 @@ public class SongParser
         String input="";
         StringBuffer stringBuffer = new StringBuffer();
         List list = new ArrayList();
-        int i;
+        int i, song_id;
 
         File[] files = new File(directory).listFiles();
         for(i = 0; i < files.length; i++)
@@ -90,15 +91,17 @@ public class SongParser
                 song.setXmlLyrics(getXmlLyrics(parseLyrics(stringBuffer.toString()), parseVerseOrder(stringBuffer.toString())));
                 song.setSearchTitle(parseSearchTitle(parseTitle(stringBuffer.toString()), parseAlternateTitle(stringBuffer.toString())));
                 song.setSearchLyrics(parseSearchLyrics(parseLyrics(stringBuffer.toString())));
-
+                
                 if(!authorDao.getEnvironmentVariable("OPENLP_HOME").isEmpty())
                 {
                     connection = authorDao.connectDb(authorDao.getEnvironmentVariable("OPENLP_HOME"));
                     author.setId(authorDao.getAuthorId(connection, parseAuthor(stringBuffer.toString())));
                     topic.setId(topicDao.getAuthorId(connection, parseTopic(stringBuffer.toString())));
                     songBook.setId(songBookDao.getAuthorId(connection, parseSongBook(stringBuffer.toString())));
+                    song_id = songDao.insertSong(connection, song, songBook);
+                    authorDao.insertAuthor(connection, author, song_id);
+                    topicDao.insertTopic(connection, topic, song_id);
                 }
-
                 logger.log(INFO, "Parsed the file : " + files[i].getName() +"\n");
                 list.add(song.toString());
             } catch (Exception e) {
