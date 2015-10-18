@@ -301,6 +301,7 @@ public class SongParserTest
         song.setXmlLyrics(xmlLyrics);
         song.setSearchTitle((song.getTitle()+"@"+song.getAlternateTitle()).toLowerCase());
         song.setSearchLyrics(searchLyrics);
+        song.setTopic("Foo");
 
         Song song1 = parser.parseSong("song.txt");
         assertTrue(song.equals(song1));
@@ -310,5 +311,15 @@ public class SongParserTest
     public void testParseSongs() throws IOException
     {
         parser.parseSongs("/home/pitchumani/songs/");
+    }
+
+    @Test
+    public void testParseTopic()
+    {
+        assertEquals("Foo", parser.parseTopic("topic=Foo"));
+        assertEquals("", parser.parseTopic("topic:Foo"));
+        assertEquals("Foo", parser.parseTopic("barbarbar\n"+
+                "topic=Foo\n" +
+                "foofoo"));
     }
 }
