@@ -34,6 +34,12 @@ public class SongParser
     final static Logger logger = Logger.getLogger(SongParser.class.getName());
     ClassLoader classLoader;
     Song song = new Song();
+    Topic topic = new Topic();
+    Author author = new Author();
+    AuthorDao authorDao = new AuthorDao();
+    TopicDao topicDao = new TopicDao();
+    Connection connection;
+    int author_id, topic_id;
 
     Song parseSong(String fileName) throws IOException
     {
@@ -41,9 +47,9 @@ public class SongParser
 
         String input = IOUtils.toString(classLoader.getResourceAsStream(fileName));
         song.setTitle(parseTitle(input));
-        song.setTopic(parseTopic(input));
+        topic.setTopic(parseTopic(input));
         song.setAlternateTitle(parseAlternateTitle(input));
-        song.setAuthor(parseAuthor(input));
+        author.setAuthor(parseAuthor(input));
         song.setVerseOrder(parseVerseOrder(input));
         song.setSongBook(parseSongBook(input));
         song.setLyrics(parseLyrics(input));
@@ -55,14 +61,12 @@ public class SongParser
 
     List parseSongs(String directory)
     {
-        Connection connection;
-        AuthorDao authorDao = new AuthorDao();
         classLoader = getClass().getClassLoader();
         BufferedReader bufferedReader = null;
         String input="";
         StringBuffer stringBuffer = new StringBuffer();
         List list = new ArrayList();
-        int i, id;
+        int i;
 
         File[] files = new File(directory).listFiles();
         for(i = 0; i < files.length; i++)
@@ -76,9 +80,9 @@ public class SongParser
                 }
                 logger.log(INFO, "Parsing the file : "+files[i].getName() +"\n");
                 song.setTitle(parseTitle(stringBuffer.toString()));
-                song.setTopic(parseTopic(stringBuffer.toString()));
+                topic.setTopic(parseTopic(stringBuffer.toString()));
                 song.setAlternateTitle(parseAlternateTitle(stringBuffer.toString()));
-                song.setAuthor(parseAuthor(stringBuffer.toString()));
+                author.setAuthor(parseAuthor(stringBuffer.toString()));
                 song.setVerseOrder(parseVerseOrder(stringBuffer.toString()));
                 song.setSongBook(parseSongBook(stringBuffer.toString()));
                 song.setLyrics(parseLyrics(stringBuffer.toString()));
@@ -89,7 +93,8 @@ public class SongParser
                 if(!authorDao.getEnvironmentVariable("OPENLP_HOME").isEmpty())
                 {
                     connection = authorDao.connectDb(authorDao.getEnvironmentVariable("OPENLP_HOME"));
-                    id = authorDao.getAuthorId(connection, parseAuthor(stringBuffer.toString()));
+                    author_id = authorDao.getAuthorId(connection, parseAuthor(stringBuffer.toString()));
+                    topic_id = topicDao.getAuthorId(connection, parseTopic(stringBuffer.toString()));
                 }
 
                 logger.log(INFO, "Parsed the file : " + files[i].getName() +"\n");
