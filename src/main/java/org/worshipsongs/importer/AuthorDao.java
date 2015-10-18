@@ -1,22 +1,28 @@
 package org.worshipsongs.importer;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+
 /**
  * Created by Pitchu on 10/18/2015.
  */
 
 public class AuthorDao {
-    public String checkEnvironmentVariable(String variableName)
+    public String getEnvironmentVariable(String variableName)
     {
         return System.getProperty(variableName);
     }
 
-    public static void main(String args[])
+    public Connection connectDb(String openlp_home)
     {
-        AuthorDao authorDao = new AuthorDao();
-        String environmentVariable = authorDao.checkEnvironmentVariable("OPENLP_HOME");
-        if(environmentVariable.isEmpty())
-            System.out.println("OPENLP_HOME environment variable should be available.");
-        else
-            System.out.println("OPENLP_HOME = "+environmentVariable);
+        Connection connection = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            // C:\Users\Pitchu\AppData\Roaming\openlp\data\songs
+            connection = DriverManager.getConnection("jdbc:sqlite:" + openlp_home + "/songs.sqlite");
+        } catch ( Exception e ) {
+            System.out.println(e);
+        }
+        return  connection;
     }
 }

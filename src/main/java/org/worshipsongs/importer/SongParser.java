@@ -54,6 +54,7 @@ public class SongParser
 
     List parseSongs(String directory)
     {
+        AuthorDao authorDao = new AuthorDao();
         classLoader = getClass().getClassLoader();
         BufferedReader bufferedReader = null;
         String input="";
@@ -81,6 +82,10 @@ public class SongParser
                 song.setXmlLyrics(getXmlLyrics(parseLyrics(stringBuffer.toString()), parseVerseOrder(stringBuffer.toString())));
                 song.setSearchTitle(parseSearchTitle(parseTitle(stringBuffer.toString()), parseAlternateTitle(stringBuffer.toString())));
                 song.setSearchLyrics(parseSearchLyrics(parseLyrics(stringBuffer.toString())));
+
+                if(!authorDao.getEnvironmentVariable("OPENLP_HOME").isEmpty())
+                    authorDao.connectDb(authorDao.getEnvironmentVariable("OPENLP_HOME"));
+
                 logger.log(INFO, "Parsed the file : " + files[i].getName() +"\n");
                 list.add(song.toString());
             } catch (Exception e) {
