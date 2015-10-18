@@ -2,6 +2,8 @@ package org.worshipsongs.importer;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 /**
  * Created by Pitchu on 10/18/2015.
@@ -24,5 +26,22 @@ public class AuthorDao {
             System.out.println(e);
         }
         return  connection;
+    }
+
+    public int getAuthorId(Connection connection, String authorName)
+    {
+        int id = 0;
+        try {
+            Statement statement = null;
+            statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery( "SELECT * FROM AUTHORS where display_name = '" + authorName + "';" );
+            id = resultSet.getInt("id");
+            resultSet.close();
+            statement.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return id;
     }
 }

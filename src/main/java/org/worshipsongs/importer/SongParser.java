@@ -18,6 +18,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -54,13 +55,15 @@ public class SongParser
 
     List parseSongs(String directory)
     {
+        Connection connection;
         AuthorDao authorDao = new AuthorDao();
         classLoader = getClass().getClassLoader();
         BufferedReader bufferedReader = null;
         String input="";
         StringBuffer stringBuffer = new StringBuffer();
         List list = new ArrayList();
-        int i;
+        int i, id;
+
         File[] files = new File(directory).listFiles();
         for(i = 0; i < files.length; i++)
         {
@@ -84,7 +87,10 @@ public class SongParser
                 song.setSearchLyrics(parseSearchLyrics(parseLyrics(stringBuffer.toString())));
 
                 if(!authorDao.getEnvironmentVariable("OPENLP_HOME").isEmpty())
-                    authorDao.connectDb(authorDao.getEnvironmentVariable("OPENLP_HOME"));
+                {
+                    connection = authorDao.connectDb(authorDao.getEnvironmentVariable("OPENLP_HOME"));
+                    id = authorDao.getAuthorId(connection, parseAuthor(stringBuffer.toString()));
+                }
 
                 logger.log(INFO, "Parsed the file : " + files[i].getName() +"\n");
                 list.add(song.toString());
