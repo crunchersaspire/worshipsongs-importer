@@ -8,7 +8,7 @@ import java.sql.Statement;
  * Created by Pitchu on 10/18/2015.
  */
 public class SongBookDao {
-    public int getAuthorId(Connection connection, String songBook)
+    public int getSongBookId(Connection connection, String songBook)
     {
         int id = 0;
         try {

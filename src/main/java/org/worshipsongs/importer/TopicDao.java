@@ -9,14 +9,16 @@ import java.sql.Statement;
  * Created by Pitchu on 10/18/2015.
  */
 public class TopicDao {
-    public int getAuthorId(Connection connection, String topic)
+    public int getTopicId(Connection connection, String topic)
     {
         int id = 0;
         try {
             Statement statement = null;
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery( "SELECT * FROM TOPICS where name = '" + topic + "';" );
-            id = resultSet.getInt("id");
+            if(resultSet.next()) {
+                id = resultSet.getInt("id");
+            }
             resultSet.close();
             statement.close();
         }
@@ -26,7 +28,7 @@ public class TopicDao {
         return id;
     }
 
-    public void insertTopic(Connection connection, Topic topic, int songId)
+    public boolean insertTopic(Connection connection, Topic topic, int songId)
     {
         try {
             String query = "insert into songs_topics (song_id, topic_id) values (?, ?)";
@@ -35,9 +37,11 @@ public class TopicDao {
             preparedStatement.setInt(2, topic.getId());
             preparedStatement.executeUpdate();
             preparedStatement.close();
+            return true;
         }
         catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
 }

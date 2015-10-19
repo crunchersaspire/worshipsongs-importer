@@ -68,7 +68,7 @@ public class SongParser
         String input="";
         StringBuffer stringBuffer = new StringBuffer();
         List list = new ArrayList();
-        int i, song_id;
+        int i;
 
         File[] files = new File(directory).listFiles();
         for(i = 0; i < files.length; i++)
@@ -91,18 +91,7 @@ public class SongParser
                 song.setXmlLyrics(getXmlLyrics(parseLyrics(stringBuffer.toString()), parseVerseOrder(stringBuffer.toString())));
                 song.setSearchTitle(parseSearchTitle(parseTitle(stringBuffer.toString()), parseAlternateTitle(stringBuffer.toString())));
                 song.setSearchLyrics(parseSearchLyrics(parseLyrics(stringBuffer.toString())));
-                
-                if(!authorDao.getEnvironmentVariable("OPENLP_HOME").isEmpty())
-                {
-                    connection = authorDao.connectDb(authorDao.getEnvironmentVariable("OPENLP_HOME"));
-                    author.setId(authorDao.getAuthorId(connection, parseAuthor(stringBuffer.toString())));
-                    topic.setId(topicDao.getAuthorId(connection, parseTopic(stringBuffer.toString())));
-                    songBook.setId(songBookDao.getAuthorId(connection, parseSongBook(stringBuffer.toString())));
-                    songDao.insertSong(connection, song, songBook);
-                    song_id = songDao.getSongId(connection, song.getTitle());
-                    authorDao.insertAuthor(connection, author, song_id);
-                    topicDao.insertTopic(connection, topic, song_id);
-                }
+                insertRecords(stringBuffer.toString());
                 logger.log(INFO, "Parsed the file : " + files[i].getName() +"\n");
                 list.add(song.toString());
             } catch (Exception e) {
@@ -113,6 +102,39 @@ public class SongParser
         return list;
     }
 
+    void insertRecords(String input)
+    {
+        int songId;
+        int authorId;
+        int topicId;
+        int songBookId;
+//        if(!getEnvironmentVariable("OPENLP_HOME").isEmpty())
+//        {
+            connection = authorDao.connectDb("/home/pitchumani");
+
+            authorId = authorDao.getAuthorId(connection, parseAuthor(input));
+            if(authorId > 0) {
+                author.setId(authorId);
+            }
+            else {
+                // insert author
+            }
+            topicId = topicDao.getTopicId(connection, parseTopic(input));
+            topic.setId(topicId);
+            songBookId = songBookDao.getSongBookId(connection, parseSongBook(input));
+            songBook.setId(songBookId);
+
+            if(songDao.insertSong(connection, song, songBook))
+            {
+                songId = songDao.getSongId(connection, song.getTitle());
+                if(authorDao.insertAuthor(connection, author, songId))
+                {
+                    topicDao.insertTopic(connection, topic, songId);
+                }
+            }
+//        }
+    }
+    
     String parseTitle(String input)
     {
         String title = parseAttribute(input, "title");
@@ -278,5 +300,15 @@ public class SongParser
 
     public String parseTopic(String input) {
         return parseAttribute(input, "topic");
+    }
+
+    public String getEnvironmentVariable(String variableName)
+    {
+        if (!variableName.isEmpty()) {
+            return System.getenv(variableName);
+        }
+        else {
+            return "";
+        }
     }
 }

@@ -7,11 +7,6 @@ import java.sql.*;
  */
 
 public class AuthorDao {
-    public String getEnvironmentVariable(String variableName)
-    {
-        return System.getProperty(variableName);
-    }
-
     public Connection connectDb(String openlp_home)
     {
         Connection connection = null;
@@ -31,17 +26,20 @@ public class AuthorDao {
             Statement statement = null;
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery( "SELECT * FROM AUTHORS where display_name = '" + authorName + "';" );
-            id = resultSet.getInt("id");
+            if(resultSet.next()) {
+                id = resultSet.getInt("id");
+            }
             resultSet.close();
             statement.close();
         }
         catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println(id);
         return id;
     }
 
-    public void insertAuthor(Connection connection, Author author, int songId)
+    public boolean insertAuthor(Connection connection, Author author, int songId)
     {
         try {
             String query = "insert into authors_songs (author_id, song_id) values (?, ?)";
@@ -50,9 +48,11 @@ public class AuthorDao {
             preparedStatement.setInt(2, songId);
             preparedStatement.executeUpdate();
             preparedStatement.close();
+            return true;
         }
         catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
 }

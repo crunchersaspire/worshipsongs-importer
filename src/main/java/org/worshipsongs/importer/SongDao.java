@@ -19,7 +19,9 @@ public class SongDao {
             Statement statement = null;
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery( "SELECT * FROM SONGS where title = '" + title + "';" );
-            id = resultSet.getInt("id");
+            if(resultSet.next()) {
+                id = resultSet.getInt("id");
+            }
             resultSet.close();
             statement.close();
         }
@@ -29,11 +31,10 @@ public class SongDao {
         return id;
     }
 
-    public void insertSong(Connection connection, Song song, SongBook songBook)
+    public boolean insertSong(Connection connection, Song song, SongBook songBook)
     {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
-        int id = 0;
         try {
             String query = "insert into songs (song_book_id, title, alternate_title, lyrics, verse_order, copyright, comments, " +
                     "ccli_number, song_number, theme_name, search_title, search_lyrics, create_date, last_modified, temporary) values " +
@@ -57,9 +58,11 @@ public class SongDao {
             preparedStatement.setInt(15, 0);
             preparedStatement.executeUpdate();
             preparedStatement.close();
+            return true;
         }
         catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
 }

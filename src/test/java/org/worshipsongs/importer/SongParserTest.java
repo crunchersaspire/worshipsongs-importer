@@ -324,4 +324,11 @@ public class SongParserTest
                 "topic=Foo\n" +
                 "foofoo"));
     }
+
+    @Test
+    public void testEnvironmentVariable()
+    {
+        assertEquals("", parser.getEnvironmentVariable(""));
+        assertEquals("", parser.getEnvironmentVariable("OPENLP_HOME"));
+    }
 }
