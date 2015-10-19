@@ -98,7 +98,8 @@ public class SongParser
                     author.setId(authorDao.getAuthorId(connection, parseAuthor(stringBuffer.toString())));
                     topic.setId(topicDao.getAuthorId(connection, parseTopic(stringBuffer.toString())));
                     songBook.setId(songBookDao.getAuthorId(connection, parseSongBook(stringBuffer.toString())));
-                    song_id = songDao.insertSong(connection, song, songBook);
+                    songDao.insertSong(connection, song, songBook);
+                    song_id = songDao.getSongId(connection, song.getTitle());
                     authorDao.insertAuthor(connection, author, song_id);
                     topicDao.insertTopic(connection, topic, song_id);
                 }

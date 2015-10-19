@@ -19,7 +19,6 @@ public class TopicDao {
             id = resultSet.getInt("id");
             resultSet.close();
             statement.close();
-            connection.close();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -31,11 +30,11 @@ public class TopicDao {
     {
         try {
             String query = "insert into songs_topics (song_id, topic_id) values (?, ?)";
-            PreparedStatement ps = connection.prepareStatement(query);
-            ps.setInt(1, songId);
-            ps.setInt(2, topic.getId());
-            ps.executeUpdate();
-            connection.close();
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, songId);
+            preparedStatement.setInt(2, topic.getId());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
         }
         catch (Exception e) {
             e.printStackTrace();

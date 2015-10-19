@@ -17,7 +17,6 @@ public class AuthorDao {
         Connection connection = null;
         try {
             Class.forName("org.sqlite.JDBC");
-            // C:\Users\Pitchu\AppData\Roaming\openlp\data\songs
             connection = DriverManager.getConnection("jdbc:sqlite:" + openlp_home + "/songs.sqlite");
         } catch ( Exception e ) {
             System.out.println(e);
@@ -35,7 +34,6 @@ public class AuthorDao {
             id = resultSet.getInt("id");
             resultSet.close();
             statement.close();
-            connection.close();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -47,11 +45,11 @@ public class AuthorDao {
     {
         try {
             String query = "insert into authors_songs (author_id, song_id) values (?, ?)";
-            PreparedStatement ps = connection.prepareStatement(query);
-            ps.setInt(1, author.getId());
-            ps.setInt(2, songId);
-            ps.executeUpdate();
-            connection.close();
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, author.getId());
+            preparedStatement.setInt(2, songId);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
         }
         catch (Exception e) {
             e.printStackTrace();

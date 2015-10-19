@@ -22,7 +22,6 @@ public class SongDao {
             id = resultSet.getInt("id");
             resultSet.close();
             statement.close();
-            connection.close();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -30,43 +29,37 @@ public class SongDao {
         return id;
     }
 
-    public int insertSong(Connection connection, Song song, SongBook songBook)
+    public void insertSong(Connection connection, Song song, SongBook songBook)
     {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         int id = 0;
         try {
-            Statement statement = null;
             String query = "insert into songs (song_book_id, title, alternate_title, lyrics, verse_order, copyright, comments, " +
                     "ccli_number, song_number, theme_name, search_title, search_lyrics, create_date, last_modified, temporary) values " +
                     "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-            PreparedStatement ps = connection.prepareStatement(query);
-            ps.setInt(1, songBook.getId());
-            ps.setString(2, song.getTitle());
-            ps.setString(3, song.getAlternateTitle());
-            ps.setString(4, song.getXmlLyrics());
-            ps.setString(5, song.getVerseOrder());
-            ps.setString(6, "");
-            ps.setString(7, "");
-            ps.setString(8, "");
-            ps.setString(9, "");
-            ps.setString(10, "");
-            ps.setString(11, song.getSearchTitle());
-            ps.setString(12, song.getSearchLyrics());
-            ps.setString(13, dateFormat.format(date));
-            ps.setString(14, dateFormat.format(date));
-            ps.setString(15, "");
-            ps.executeUpdate();
-
-            ResultSet resultSet = statement.executeQuery( "SELECT * FROM SONGS where title = '" + song.getTitle() + "';" );
-            id = resultSet.getInt("id");
-            statement.close();
-            connection.close();
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, songBook.getId());
+            preparedStatement.setString(2, song.getTitle());
+            preparedStatement.setString(3, song.getAlternateTitle());
+            preparedStatement.setString(4, song.getXmlLyrics());
+            preparedStatement.setString(5, song.getVerseOrder());
+            preparedStatement.setString(6, "");
+            preparedStatement.setString(7, "");
+            preparedStatement.setString(8, "");
+            preparedStatement.setString(9, "");
+            preparedStatement.setString(10, "");
+            preparedStatement.setString(11, song.getSearchTitle());
+            preparedStatement.setString(12, song.getSearchLyrics());
+            preparedStatement.setString(13, dateFormat.format(date));
+            preparedStatement.setString(14, dateFormat.format(date));
+            preparedStatement.setInt(15, 0);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
         }
         catch (Exception e) {
             e.printStackTrace();
         }
-        return id;
     }
 }
