@@ -28,7 +28,7 @@ public class TopicDao {
         return id;
     }
 
-    public boolean insertTopic(Connection connection, Topic topic, int songId)
+    public boolean insertTopicSongs(Connection connection, Topic topic, int songId)
     {
         try {
             String query = "insert into songs_topics (song_id, topic_id) values (?, ?)";
@@ -43,5 +43,20 @@ public class TopicDao {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public int insertTopic(Connection connection, String topic)
+    {
+        try {
+            String query = "insert into topics (name) values (?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, topic);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return getTopicId(connection, topic);
     }
 }

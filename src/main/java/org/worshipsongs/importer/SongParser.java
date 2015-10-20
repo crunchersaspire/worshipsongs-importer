@@ -46,7 +46,6 @@ public class SongParser
     Song parseSong(String fileName) throws IOException
     {
         classLoader = getClass().getClassLoader();
-
         String input = IOUtils.toString(classLoader.getResourceAsStream(fileName));
         song.setTitle(parseTitle(input));
         topic.setTopic(parseTopic(input));
@@ -70,71 +69,123 @@ public class SongParser
         List list = new ArrayList();
         int i;
 
-        File[] files = new File(directory).listFiles();
-        for(i = 0; i < files.length; i++)
-        {
-            try {
-                logger.log(INFO, "Reading the file : "+files[i].getName() +"\n");
-                bufferedReader = new BufferedReader(new FileReader(directory+"/"+files[i].getName()));
-                while ((input = bufferedReader.readLine()) != null) {
-                    stringBuffer.append(input);
-                    stringBuffer.append("\n");
+//        if(!getEnvironmentVariable("OPENLP_HOME").isEmpty())
+//        {
+            File[] files = new File(directory).listFiles();
+            for(i = 0; i < files.length; i++)
+            {
+                try
+                {
+                    logger.log(INFO, "Reading the file : "+files[i].getName() +"\n");
+                    bufferedReader = new BufferedReader(new FileReader(directory+"/"+files[i].getName()));
+                    while ((input = bufferedReader.readLine()) != null)
+                    {
+                        stringBuffer.append(input);
+                        stringBuffer.append("\n");
+                    }
+                    logger.log(INFO, "Parsing the file : "+files[i].getName() +"\n");
+                    song.setTitle(parseTitle(stringBuffer.toString()));
+                    topic.setTopic(parseTopic(stringBuffer.toString()));
+                    song.setAlternateTitle(parseAlternateTitle(stringBuffer.toString()));
+                    author.setAuthor(parseAuthor(stringBuffer.toString()));
+                    song.setVerseOrder(parseVerseOrder(stringBuffer.toString()));
+                    songBook.setSongBook(parseSongBook(stringBuffer.toString()));
+                    song.setLyrics(parseLyrics(stringBuffer.toString()));
+                    song.setXmlLyrics(getXmlLyrics(parseLyrics(stringBuffer.toString()), parseVerseOrder(stringBuffer.toString())));
+                    song.setSearchTitle(parseSearchTitle(parseTitle(stringBuffer.toString()), parseAlternateTitle(stringBuffer.toString())));
+                    song.setSearchLyrics(parseSearchLyrics(parseLyrics(stringBuffer.toString())));
+                    logger.log(INFO, "Parsed the file : " + files[i].getName() + "\n");
+                    list.add(song.toString());
+                    logger.log(INFO, "Inserting the record.\n");
+
+                    insertRecords(stringBuffer.toString(), "/home/pitchumani");
                 }
-                logger.log(INFO, "Parsing the file : "+files[i].getName() +"\n");
-                song.setTitle(parseTitle(stringBuffer.toString()));
-                topic.setTopic(parseTopic(stringBuffer.toString()));
-                song.setAlternateTitle(parseAlternateTitle(stringBuffer.toString()));
-                author.setAuthor(parseAuthor(stringBuffer.toString()));
-                song.setVerseOrder(parseVerseOrder(stringBuffer.toString()));
-                songBook.setSongBook(parseSongBook(stringBuffer.toString()));
-                song.setLyrics(parseLyrics(stringBuffer.toString()));
-                song.setXmlLyrics(getXmlLyrics(parseLyrics(stringBuffer.toString()), parseVerseOrder(stringBuffer.toString())));
-                song.setSearchTitle(parseSearchTitle(parseTitle(stringBuffer.toString()), parseAlternateTitle(stringBuffer.toString())));
-                song.setSearchLyrics(parseSearchLyrics(parseLyrics(stringBuffer.toString())));
-                insertRecords(stringBuffer.toString());
-                logger.log(INFO, "Parsed the file : " + files[i].getName() +"\n");
-                list.add(song.toString());
-            } catch (Exception e) {
-                logger.log(SEVERE, "Problem while parsing/reading the file " + e +"\n");
+                catch (Exception e) {
+                    logger.log(SEVERE, "Problem while parsing/reading the file " + e +"\n");
+                }
             }
-        }
-        logger.log(INFO, "Parsed "+ i +" files.");
+            logger.log(INFO, "Parsed "+ i +" files.");
+//        }
+//        else {
+//            logger.log(INFO, "Please set the environment variable : OPENLP_HOME");
+//            System.exit(0);
+//        }
         return list;
     }
 
-    void insertRecords(String input)
+    void insertRecords(String input, String openLpHome)
     {
-        int songId;
         int authorId;
         int topicId;
         int songBookId;
-//        if(!getEnvironmentVariable("OPENLP_HOME").isEmpty())
-//        {
-            connection = authorDao.connectDb("/home/pitchumani");
+        int songId;
 
-            authorId = authorDao.getAuthorId(connection, parseAuthor(input));
-            if(authorId > 0) {
-                author.setId(authorId);
-            }
-            else {
-                // insert author
-            }
-            topicId = topicDao.getTopicId(connection, parseTopic(input));
+        connection = authorDao.connectDb(openLpHome);
+
+        authorId = getAuthorId(input, connection);
+        if(authorId > 0) {
+            author.setId(authorId);
+        }
+        else {
+            author.setId(insertAuthor(connection, parseAuthor(input)));
+        }
+
+        topicId = getTopicId(input, connection);
+        if(topicId > 0) {
             topic.setId(topicId);
-            songBookId = songBookDao.getSongBookId(connection, parseSongBook(input));
-            songBook.setId(songBookId);
+        }
+        else {
+            topic.setId(insertTopic(connection, parseTopic(input)));
+        }
 
-            if(songDao.insertSong(connection, song, songBook))
+        songBookId = getSongBookId(input, connection);
+        if(songBookId > 0) {
+            songBook.setId(songBookId);
+        }
+        else {
+            songBook.setId(insertSongBook(connection, parseSongBook(input)));
+        }
+
+        if(songDao.insertSong(connection, song, songBook))
+        {
+            songId = songDao.getSongId(connection, song.getTitle());
+            if(authorDao.insertAuthorSongs(connection, author, songId))
             {
-                songId = songDao.getSongId(connection, song.getTitle());
-                if(authorDao.insertAuthor(connection, author, songId))
-                {
-                    topicDao.insertTopic(connection, topic, songId);
-                }
+                topicDao.insertTopicSongs(connection, topic, songId);
             }
-//        }
+        }
     }
-    
+
+    int getAuthorId(String input, Connection connection)
+    {
+        return authorDao.getAuthorId(connection, parseAuthor(input));
+    }
+
+    int getSongBookId(String input, Connection connection)
+    {
+        return songBookDao.getSongBookId(connection, parseSongBook(input));
+    }
+
+    int getTopicId(String input, Connection connection)
+    {
+        return topicDao.getTopicId(connection, parseTopic(input));
+    }
+
+    int insertAuthor(Connection connection, String author)
+    {
+        return authorDao.insertAuthor(connection, author);
+    }
+
+    int insertTopic(Connection connection, String topic)
+    {
+        return topicDao.insertTopic(connection, topic);
+    }
+
+    int insertSongBook(Connection connection, String topic)
+    {
+        return songBookDao.insertSongBook(connection, topic);
+    }
+
     String parseTitle(String input)
     {
         String title = parseAttribute(input, "title");

@@ -16,7 +16,8 @@ From the grave to the sky
 Lord I lift Your name on high
 
 title=Lord I lift Your Name
-author=Unknown
+author=Pitchumani
 alternateTitle=Lord I lift Your Name
 verseOrder=V1 O1 C1 O2 O3
-songBook=Foo
+songBook=Today
+topic=Today

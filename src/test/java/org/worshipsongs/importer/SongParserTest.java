@@ -24,6 +24,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.sql.Connection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -37,6 +38,9 @@ public class SongParserTest
     Transformer transformer;
     Writer out = new StringWriter();
     ClassLoader classLoader;
+    Connection connection;
+    AuthorDao authorDao = new AuthorDao();
+
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -101,6 +105,7 @@ public class SongParserTest
         document = docBuilder.newDocument();
         transformer = TransformerFactory.newInstance().newTransformer();
         classLoader = getClass().getClassLoader();
+        connection = authorDao.connectDb("/home/pitchumani");
     }
 
     @Test
@@ -312,7 +317,7 @@ public class SongParserTest
     @Test
     public void testParseSongs() throws IOException
     {
-        parser.parseSongs("/home/pitchumani/songs/");
+        parser.parseSongs(this.getClass().getResource("/songs").getPath());
     }
 
     @Test
@@ -329,6 +334,34 @@ public class SongParserTest
     public void testEnvironmentVariable()
     {
         assertEquals("", parser.getEnvironmentVariable(""));
-        assertEquals("", parser.getEnvironmentVariable("OPENLP_HOME"));
+        assertEquals(null, parser.getEnvironmentVariable("OPENLP_HOME"));
+    }
+
+    @Test
+    public void testGetAuthorId() throws IOException
+    {
+        String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
+        assertEquals(3, parser.getAuthorId(input, connection));
+    }
+
+    @Test
+    public void testGetSongBookId() throws IOException
+    {
+        String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
+        assertEquals(1, parser.getSongBookId(input, connection));
+    }
+
+    @Test
+    public void testGetTopicId() throws IOException
+    {
+        String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
+        assertEquals(8, parser.getTopicId(input, connection));
+    }
+
+    @Test
+    public void testInsertRecords() throws IOException
+    {
+        String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
+        parser.insertRecords(input, "/home/pitchumani");
     }
 }

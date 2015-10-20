@@ -35,11 +35,10 @@ public class AuthorDao {
         catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(id);
         return id;
     }
 
-    public boolean insertAuthor(Connection connection, Author author, int songId)
+    public boolean insertAuthorSongs(Connection connection, Author author, int songId)
     {
         try {
             String query = "insert into authors_songs (author_id, song_id) values (?, ?)";
@@ -54,5 +53,22 @@ public class AuthorDao {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public int insertAuthor(Connection connection, String displayName)
+    {
+        try {
+            String query = "insert into authors (first_name, last_name, display_name) values (?, ?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, "");
+            preparedStatement.setString(2, "");
+            preparedStatement.setString(3, displayName);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return getAuthorId(connection, displayName);
     }
 }
