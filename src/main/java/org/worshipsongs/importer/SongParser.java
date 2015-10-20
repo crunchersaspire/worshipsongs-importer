@@ -69,8 +69,8 @@ public class SongParser
         List list = new ArrayList();
         int i;
 
-//        if(!getEnvironmentVariable("OPENLP_HOME").isEmpty())
-//        {
+        if(!getEnvironmentVariable("OPENLP_HOME").isEmpty())
+        {
             File[] files = new File(directory).listFiles();
             for(i = 0; i < files.length; i++)
             {
@@ -98,18 +98,18 @@ public class SongParser
                     list.add(song.toString());
                     logger.log(INFO, "Inserting the record.\n");
 
-                    insertRecords(stringBuffer.toString(), "/home/pitchumani");
+                    insertRecords(stringBuffer.toString(), getEnvironmentVariable("OPENLP_HOME"));
                 }
                 catch (Exception e) {
                     logger.log(SEVERE, "Problem while parsing/reading the file " + e +"\n");
                 }
             }
             logger.log(INFO, "Parsed "+ i +" files.");
-//        }
-//        else {
-//            logger.log(INFO, "Please set the environment variable : OPENLP_HOME");
-//            System.exit(0);
-//        }
+        }
+        else {
+            logger.log(INFO, "Please set the environment variable : OPENLP_HOME");
+            System.exit(0);
+        }
         return list;
     }
 

@@ -334,7 +334,7 @@ public class SongParserTest
     public void testEnvironmentVariable()
     {
         assertEquals("", parser.getEnvironmentVariable(""));
-        assertEquals(null, parser.getEnvironmentVariable("OPENLP_HOME"));
+        assertEquals(System.getenv("OPENLP_HOME"), parser.getEnvironmentVariable("OPENLP_HOME"));
     }
 
     @Test
@@ -362,6 +362,6 @@ public class SongParserTest
     public void testInsertRecords() throws IOException
     {
         String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        parser.insertRecords(input, "/home/pitchumani");
+        parser.insertRecords(input, parser.getEnvironmentVariable("OPENLP_HOME"));
     }
 }

@@ -26,7 +26,7 @@ public class SongDao {
             statement.close();
         }
         catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Exception:"+e);
         }
         return id;
     }
