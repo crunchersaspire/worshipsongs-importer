@@ -301,14 +301,11 @@ public class SongParserTest
         Song song = new Song();
         song.setTitle("Lord I lift Your Name");
         song.setAlternateTitle("Lord I lift Your Name");
-        //song.setAuthor("Unknown");
         song.setVerseOrder("V1 O1 C1 O2 O3");
-        //song.setSongBook("");
         song.setLyrics(lyrics);
         song.setXmlLyrics(xmlLyrics);
         song.setSearchTitle((song.getTitle()+"@"+song.getAlternateTitle()).toLowerCase());
         song.setSearchLyrics(searchLyrics);
-        //song.setTopic("Foo");
 
         Song song1 = parser.parseSong("song.txt");
         assertTrue(song.equals(song1));
@@ -317,7 +314,7 @@ public class SongParserTest
     @Test
     public void testParseSongs() throws IOException
     {
-        parser.parseSongs(this.getClass().getResource("/songs").getPath());
+        parser.parseSongs(this.getClass().getResource("/songs").getPath(), this.getClass().getResource("/db").getPath());
     }
 
     @Test
@@ -334,7 +331,7 @@ public class SongParserTest
     public void testEnvironmentVariable()
     {
         assertEquals("", parser.getEnvironmentVariable(""));
-        assertEquals(System.getenv("OPENLP_HOME"), parser.getEnvironmentVariable("OPENLP_HOME"));
+        assertEquals(null, parser.getEnvironmentVariable("OPENLP_HOME"));
     }
 
     @Test
@@ -362,6 +359,6 @@ public class SongParserTest
     public void testInsertRecords() throws IOException
     {
         String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        parser.insertRecords(input, parser.getEnvironmentVariable("OPENLP_HOME"));
+        parser.insertRecords(input, "/home/pitchumani");
     }
 }

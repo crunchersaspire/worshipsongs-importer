@@ -60,7 +60,7 @@ public class SongParser
         return song;
     }
 
-    List parseSongs(String directory)
+    List parseSongs(String songsDirectory, String dbPath)
     {
         classLoader = getClass().getClassLoader();
         BufferedReader bufferedReader = null;
@@ -69,15 +69,13 @@ public class SongParser
         List list = new ArrayList();
         int i;
 
-        if(!getEnvironmentVariable("OPENLP_HOME").isEmpty())
-        {
-            File[] files = new File(directory).listFiles();
+            File[] files = new File(songsDirectory).listFiles();
             for(i = 0; i < files.length; i++)
             {
                 try
                 {
                     logger.log(INFO, "Reading the file : "+files[i].getName() +"\n");
-                    bufferedReader = new BufferedReader(new FileReader(directory+"/"+files[i].getName()));
+                    bufferedReader = new BufferedReader(new FileReader(songsDirectory+"/"+files[i].getName()));
                     while ((input = bufferedReader.readLine()) != null)
                     {
                         stringBuffer.append(input);
@@ -98,18 +96,13 @@ public class SongParser
                     list.add(song.toString());
                     logger.log(INFO, "Inserting the record.\n");
 
-                    insertRecords(stringBuffer.toString(), getEnvironmentVariable("OPENLP_HOME"));
+                    insertRecords(stringBuffer.toString(), dbPath);
                 }
                 catch (Exception e) {
                     logger.log(SEVERE, "Problem while parsing/reading the file " + e +"\n");
                 }
             }
             logger.log(INFO, "Parsed "+ i +" files.");
-        }
-        else {
-            logger.log(INFO, "Please set the environment variable : OPENLP_HOME");
-            System.exit(0);
-        }
         return list;
     }
 
