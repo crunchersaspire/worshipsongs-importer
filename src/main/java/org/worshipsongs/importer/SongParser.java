@@ -36,7 +36,7 @@ public class SongParser
     Song song = new Song();
     Topic topic = new Topic();
     Author author = new Author();
-    SongBook  songBook = new SongBook();
+    SongBook songBook = new SongBook();
     AuthorDao authorDao = new AuthorDao();
     TopicDao topicDao = new TopicDao();
     SongBookDao songBookDao = new SongBookDao();
@@ -64,45 +64,41 @@ public class SongParser
     {
         classLoader = getClass().getClassLoader();
         BufferedReader bufferedReader = null;
-        String input="";
+        String input = "";
         StringBuffer stringBuffer = new StringBuffer();
         List list = new ArrayList();
         int i;
 
-            File[] files = new File(songsDirectory).listFiles();
-            for(i = 0; i < files.length; i++)
-            {
-                try
-                {
-                    logger.log(INFO, "Reading the file : "+files[i].getName() +"\n");
-                    bufferedReader = new BufferedReader(new FileReader(songsDirectory+"/"+files[i].getName()));
-                    while ((input = bufferedReader.readLine()) != null)
-                    {
-                        stringBuffer.append(input);
-                        stringBuffer.append("\n");
-                    }
-                    logger.log(INFO, "Parsing the file : "+files[i].getName() +"\n");
-                    song.setTitle(parseTitle(stringBuffer.toString()));
-                    topic.setTopic(parseTopic(stringBuffer.toString()));
-                    song.setAlternateTitle(parseAlternateTitle(stringBuffer.toString()));
-                    author.setAuthor(parseAuthor(stringBuffer.toString()));
-                    song.setVerseOrder(parseVerseOrder(stringBuffer.toString()));
-                    songBook.setSongBook(parseSongBook(stringBuffer.toString()));
-                    song.setLyrics(parseLyrics(stringBuffer.toString()));
-                    song.setXmlLyrics(getXmlLyrics(parseLyrics(stringBuffer.toString()), parseVerseOrder(stringBuffer.toString())));
-                    song.setSearchTitle(parseSearchTitle(parseTitle(stringBuffer.toString()), parseAlternateTitle(stringBuffer.toString())));
-                    song.setSearchLyrics(parseSearchLyrics(parseLyrics(stringBuffer.toString())));
-                    logger.log(INFO, "Parsed the file : " + files[i].getName() + "\n");
-                    list.add(song.toString());
-                    logger.log(INFO, "Inserting the record.\n");
+        File[] files = new File(songsDirectory).listFiles();
+        for (i = 0; i < files.length; i++) {
+            try {
+                logger.log(INFO, "Reading the file : " + files[i].getName() + "\n");
+                bufferedReader = new BufferedReader(new FileReader(songsDirectory + "/" + files[i].getName()));
+                while ((input = bufferedReader.readLine()) != null) {
+                    stringBuffer.append(input);
+                    stringBuffer.append("\n");
+                }
+                logger.log(INFO, "Parsing the file : " + files[i].getName() + "\n");
+                song.setTitle(parseTitle(stringBuffer.toString()));
+                topic.setTopic(parseTopic(stringBuffer.toString()));
+                song.setAlternateTitle(parseAlternateTitle(stringBuffer.toString()));
+                author.setAuthor(parseAuthor(stringBuffer.toString()));
+                song.setVerseOrder(parseVerseOrder(stringBuffer.toString()));
+                songBook.setSongBook(parseSongBook(stringBuffer.toString()));
+                song.setLyrics(parseLyrics(stringBuffer.toString()));
+                song.setXmlLyrics(getXmlLyrics(parseLyrics(stringBuffer.toString()), parseVerseOrder(stringBuffer.toString())));
+                song.setSearchTitle(parseSearchTitle(parseTitle(stringBuffer.toString()), parseAlternateTitle(stringBuffer.toString())));
+                song.setSearchLyrics(parseSearchLyrics(parseLyrics(stringBuffer.toString())));
+                logger.log(INFO, "Parsed the file : " + files[i].getName() + "\n");
+                list.add(song.toString());
+                logger.log(INFO, "Inserting the record.\n");
 
-                    insertRecords(stringBuffer.toString(), dbPath);
-                }
-                catch (Exception e) {
-                    logger.log(SEVERE, "Problem while parsing/reading the file " + e +"\n");
-                }
+                insertRecords(stringBuffer.toString(), dbPath);
+            } catch (Exception e) {
+                logger.log(SEVERE, "Problem while parsing/reading the file " + e + "\n");
             }
-            logger.log(INFO, "Parsed "+ i +" files.");
+        }
+        logger.log(INFO, "Parsed " + i + " files.");
         return list;
     }
 
@@ -116,34 +112,29 @@ public class SongParser
         connection = authorDao.connectDb(openLpHome);
 
         authorId = getAuthorId(input, connection);
-        if(authorId > 0) {
+        if (authorId > 0) {
             author.setId(authorId);
-        }
-        else {
+        } else {
             author.setId(insertAuthor(connection, parseAuthor(input)));
         }
 
         topicId = getTopicId(input, connection);
-        if(topicId > 0) {
+        if (topicId > 0) {
             topic.setId(topicId);
-        }
-        else {
+        } else {
             topic.setId(insertTopic(connection, parseTopic(input)));
         }
 
         songBookId = getSongBookId(input, connection);
-        if(songBookId > 0) {
+        if (songBookId > 0) {
             songBook.setId(songBookId);
-        }
-        else {
+        } else {
             songBook.setId(insertSongBook(connection, parseSongBook(input)));
         }
 
-        if(songDao.insertSong(connection, song, songBook))
-        {
+        if (songDao.insertSong(connection, song, songBook)) {
             songId = songDao.getSongId(connection, song.getTitle());
-            if(authorDao.insertAuthorSongs(connection, author, songId))
-            {
+            if (authorDao.insertAuthorSongs(connection, author, songId)) {
                 topicDao.insertTopicSongs(connection, topic, songId);
             }
         }
@@ -182,7 +173,7 @@ public class SongParser
     String parseTitle(String input)
     {
         String title = parseAttribute(input, "title");
-        if(title == "") {
+        if (title == "") {
             throw new NullPointerException("Title should not be empty");
         }
         return title;
@@ -208,7 +199,7 @@ public class SongParser
         String verses[] = splitVerse(lyrics);
         String searchLyrics = "";
 
-        for(int i = 1; i < verses.length; i++) {
+        for (int i = 1; i < verses.length; i++) {
             searchLyrics = searchLyrics.concat(verses[i].replace("\n", " ").replaceAll("[^a-zA-Z0-9\\s]", ""));
         }
         return searchLyrics.toLowerCase().trim();
@@ -264,9 +255,8 @@ public class SongParser
             String verseOrders[] = splitVerseOrder(verseOrder);
             String verses[] = splitVerse(lyrics);
 
-            for (int i = 0; i < verseOrders.length; i++)
-            {
-                Element verseElement = getVerseElement(document, verseOrders[i], verses[i+1]);
+            for (int i = 0; i < verseOrders.length; i++) {
+                Element verseElement = getVerseElement(document, verseOrders[i], verses[i + 1]);
                 lyricsElement.appendChild(verseElement);
             }
 
@@ -317,7 +307,7 @@ public class SongParser
     String splitVerseType(String verse)
     {
         String verseType = "";
-        if(!verse.isEmpty()) {
+        if (!verse.isEmpty()) {
             verseType = verse.split("(?!^)")[0].toLowerCase();
         }
         return verseType;
@@ -326,7 +316,7 @@ public class SongParser
     String splitVerseLabel(String verse)
     {
         String verseLabel = "";
-        if(!verse.isEmpty()) {
+        if (!verse.isEmpty()) {
             verseLabel = verse.split("(?!^)")[1];
         }
         return verseLabel;
@@ -342,7 +332,8 @@ public class SongParser
         return parseAttribute(input, "songBook");
     }
 
-    public String parseTopic(String input) {
+    public String parseTopic(String input)
+    {
         return parseAttribute(input, "topic");
     }
 
@@ -350,8 +341,7 @@ public class SongParser
     {
         if (!variableName.isEmpty()) {
             return System.getenv(variableName);
-        }
-        else {
+        } else {
             return "";
         }
     }

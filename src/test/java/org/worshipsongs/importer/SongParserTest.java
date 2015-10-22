@@ -97,6 +97,7 @@ public class SongParserTest
             "My debts to pay]]></verse><verse label=\"3\" type=\"o\"><![CDATA[From the cross to the grave,\n" +
             "From the grave to the sky\n" +
             "Lord I lift Your name on high]]></verse></lyrics></song>";
+
     @Before
     public void setUp() throws ParserConfigurationException, TransformerConfigurationException
     {
@@ -129,7 +130,7 @@ public class SongParserTest
     @Test
     public void testParseTitle3()
     {
-        String input = "barbarbar\n"+
+        String input = "barbarbar\n" +
                 "title=foo\n" +
                 "foofoo";
         String expected = "foo";
@@ -142,7 +143,7 @@ public class SongParserTest
     {
         assertEquals("Foo", parser.parseAuthor("author=Foo"));
         assertEquals("", parser.parseAuthor("author:Foo"));
-        assertEquals("Foo", parser.parseAuthor("barbarbar\n"+
+        assertEquals("Foo", parser.parseAuthor("barbarbar\n" +
                 "author=Foo\n" +
                 "foofoo"));
     }
@@ -304,7 +305,7 @@ public class SongParserTest
         song.setVerseOrder("V1 O1 C1 O2 O3");
         song.setLyrics(lyrics);
         song.setXmlLyrics(xmlLyrics);
-        song.setSearchTitle((song.getTitle()+"@"+song.getAlternateTitle()).toLowerCase());
+        song.setSearchTitle((song.getTitle() + "@" + song.getAlternateTitle()).toLowerCase());
         song.setSearchLyrics(searchLyrics);
 
         Song song1 = parser.parseSong("song.txt");
@@ -322,7 +323,7 @@ public class SongParserTest
     {
         assertEquals("Foo", parser.parseTopic("topic=Foo"));
         assertEquals("", parser.parseTopic("topic:Foo"));
-        assertEquals("Foo", parser.parseTopic("barbarbar\n"+
+        assertEquals("Foo", parser.parseTopic("barbarbar\n" +
                 "topic=Foo\n" +
                 "foofoo"));
     }
@@ -338,27 +339,27 @@ public class SongParserTest
     public void testGetAuthorId() throws IOException
     {
         String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        assertEquals(3, parser.getAuthorId(input, connection));
+        assertEquals(147, parser.getAuthorId(input, connection));
     }
 
     @Test
     public void testGetSongBookId() throws IOException
     {
         String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        assertEquals(1, parser.getSongBookId(input, connection));
+        assertEquals(4, parser.getSongBookId(input, connection));
     }
 
     @Test
     public void testGetTopicId() throws IOException
     {
         String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        assertEquals(8, parser.getTopicId(input, connection));
+        assertEquals(11, parser.getTopicId(input, connection));
     }
 
     @Test
     public void testInsertRecords() throws IOException
     {
         String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        parser.insertRecords(input, "/home/pitchumani");
+        parser.insertRecords(input, this.getClass().getResource("/db").getPath());
     }
 }
