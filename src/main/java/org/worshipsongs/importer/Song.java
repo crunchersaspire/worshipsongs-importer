@@ -5,7 +5,13 @@ package org.worshipsongs.importer;
  */
 public class Song
 {
-    String title, alternateTitle, author ,verseOrder ,songBook ,lyrics ,xmlLyrics ,searchTitle , searchLyrics;
+    private String title;
+    private String alternateTitle;
+    private String verseOrder;
+    private String lyrics;
+    private String xmlLyrics;
+    private String searchTitle;
+    private String searchLyrics;
 
     public String getTitle()
     {
@@ -27,16 +33,6 @@ public class Song
         this.alternateTitle = alternateTitle;
     }
 
-    public String getAuthor()
-    {
-        return author;
-    }
-
-    public void setAuthor(String author)
-    {
-        this.author = author;
-    }
-
     public String getVerseOrder()
     {
         return verseOrder;
@@ -45,16 +41,6 @@ public class Song
     public void setVerseOrder(String verseOrder)
     {
         this.verseOrder = verseOrder;
-    }
-
-    public String getSongBook()
-    {
-        return songBook;
-    }
-
-    public void setSongBook(String songBook)
-    {
-        this.songBook = songBook;
     }
 
     public String getLyrics()
@@ -95,5 +81,18 @@ public class Song
     public void setSearchLyrics(String searchLyrics)
     {
         this.searchLyrics = searchLyrics;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        Song song = (Song) obj;
+        return ((song.title.equals(this.title)));
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Title --> "+this.getTitle();
     }
 }
