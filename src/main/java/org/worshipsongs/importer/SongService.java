@@ -52,7 +52,10 @@ public class SongService
 
     int getSetInsertAuthor(Author author, Connection connection)
     {
-        int authorId;
+        int authorId = 0;
+        if (author.getAuthor().isEmpty()) {
+            author.setAuthor("Author Unknown");
+        }
         authorId = getAuthorId(author.getAuthor(), connection);
         if (authorId > 0) {
             return authorId;
@@ -64,24 +67,28 @@ public class SongService
 
     int getSetInsertTopic(Topic topic, Connection connection)
     {
-        int topicId;
-        topicId = getTopicId(topic.getTopic(), connection);
-        if (topicId > 0) {
-            return topicId;
-        } else {
-            topicId = insertTopic(connection, topic.getTopic());
+        int topicId = 0;
+        if (!topic.getTopic().isEmpty()) {
+            topicId = getTopicId(topic.getTopic(), connection);
+            if (topicId > 0) {
+                return topicId;
+            } else {
+                topicId = insertTopic(connection, topic.getTopic());
+            }
         }
         return topicId;
     }
 
     int getSetInsertSongBook(SongBook songBook, Connection connection)
     {
-        int songBookId;
-        songBookId = getSongBookId(songBook.getSongBook(), connection);
-        if (songBookId > 0) {
-            return songBookId;
-        } else {
-            songBookId = insertSongBook(connection, songBook.getSongBook());
+        int songBookId = 0;
+        if (!songBook.getSongBook().isEmpty()) {
+            songBookId = getSongBookId(songBook.getSongBook(), connection);
+            if (songBookId > 0) {
+                return songBookId;
+            } else {
+                songBookId = insertSongBook(connection, songBook.getSongBook());
+            }
         }
         return songBookId;
     }
