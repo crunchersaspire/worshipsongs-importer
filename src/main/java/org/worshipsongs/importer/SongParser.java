@@ -37,27 +37,6 @@ public class SongParser
     private Author author = new Author();
     private SongBook songBook = new SongBook();
 
-    List parseSong(String input) throws IOException
-    {
-        List list = new ArrayList();
-        classLoader = getClass().getClassLoader();
-        song.setTitle(parseTitle(input));
-        topic.setTopic(parseTopic(input));
-        song.setAlternateTitle(parseAlternateTitle(input));
-        author.setAuthor(parseAuthor(input));
-        song.setVerseOrder(parseVerseOrder(input));
-        songBook.setSongBook(parseSongBook(input));
-        song.setLyrics(parseLyrics(input));
-        song.setXmlLyrics(getXmlLyrics(parseLyrics(input)));
-        song.setSearchTitle(parseSearchTitle(parseTitle(input), parseAlternateTitle(input)));
-        song.setSearchLyrics(parseSearchLyrics(parseLyrics(input)));
-        list.add(song);
-        list.add(topic);
-        list.add(author);
-        list.add(songBook);
-        return list;
-    }
-
     List readFileAndParseSong(String songsDirectory) throws IOException
     {
         BufferedReader bufferedReader = null;
@@ -80,6 +59,26 @@ public class SongParser
         return list;
     }
 
+    List parseSong(String input) throws IOException
+    {
+        List list = new ArrayList();
+        classLoader = getClass().getClassLoader();
+        song.setTitle(parseTitle(input));
+        song.setAlternateTitle(parseAlternateTitle(input));
+        author.setAuthor(parseAuthor(input));
+        song.setVerseOrder(parseVerseOrder(input));
+        songBook.setSongBook(parseSongBook(input));
+        topic.setTopic(parseTopic(input));
+        song.setXmlLyrics(getXmlLyrics(parseLyrics(input)));
+        song.setSearchTitle(parseSearchTitle(parseTitle(input), parseAlternateTitle(input)));
+        song.setSearchLyrics(parseSearchLyrics(parseLyrics(input)));
+        list.add(song);
+        list.add(topic);
+        list.add(author);
+        list.add(songBook);
+        return list;
+    }
+
     String parseTitle(String input)
     {
         String title = parseAttribute(input, "title");
@@ -89,14 +88,14 @@ public class SongParser
         return title;
     }
 
-    String parseAuthor(String input)
-    {
-        return parseAttribute(input, "author");
-    }
-
     String parseAlternateTitle(String input)
     {
         return parseAttribute(input, "alternateTitle");
+    }
+
+    String parseAuthor(String input)
+    {
+        return parseAttribute(input, "author");
     }
 
     String parseSearchTitle(String title, String alternateTitle)
@@ -123,6 +122,11 @@ public class SongParser
     String parseLyrics(String lyrics)
     {
         return lyrics.split(".*=")[0].trim();
+    }
+
+    String parseTopic(String input)
+    {
+        return parseAttribute(input, "topic");
     }
 
     String parseAttribute(String input, String attributeName)
@@ -233,11 +237,6 @@ public class SongParser
     String parseSongBook(String input)
     {
         return parseAttribute(input, "songBook");
-    }
-
-    String parseTopic(String input)
-    {
-        return parseAttribute(input, "topic");
     }
 
     List splitVerse(String input)

@@ -14,7 +14,7 @@ public class SongService
     private TopicDao topicDao = new TopicDao();
     private SongBookDao songBookDao = new SongBookDao();
 
-    public void parseAndInsertSong(String songsDirectory, String dbFilePath) throws IOException
+    public void parseAndInsertSongs(String songsDirectory, String dbFilePath) throws IOException
     {
         List list;
         SongParser songParser = new SongParser();
@@ -38,9 +38,9 @@ public class SongService
         int songBookId;
 
         connection = databaseUtils.connectDb(openLpHome);
-        authorId = getSetInsertAuthor(author, connection);
-        topicId = getSetInsertTopic(topic, connection);
-        songBookId = getSetInsertSongBook(songBook, connection);
+        authorId = getAndInsertAuthor(author, connection);
+        topicId = getAndInsertTopic(topic, connection);
+        songBookId = getAndInsertSongBook(songBook, connection);
 
         if (songDao.insertSong(connection, song, songBookId)) {
             songId = songDao.getSongId(connection, song.getTitle());
@@ -53,9 +53,9 @@ public class SongService
         }
     }
 
-    int getSetInsertAuthor(Author author, Connection connection)
+    int getAndInsertAuthor(Author author, Connection connection)
     {
-        int authorId = 0;
+        int authorId;
         if (author.getAuthor().isEmpty()) {
             author.setAuthor("Author Unknown");
         }
@@ -68,7 +68,7 @@ public class SongService
         return authorId;
     }
 
-    int getSetInsertTopic(Topic topic, Connection connection)
+    int getAndInsertTopic(Topic topic, Connection connection)
     {
         int topicId = 0;
         if (!topic.getTopic().isEmpty()) {
@@ -82,7 +82,7 @@ public class SongService
         return topicId;
     }
 
-    int getSetInsertSongBook(SongBook songBook, Connection connection)
+    int getAndInsertSongBook(SongBook songBook, Connection connection)
     {
         int songBookId = 0;
         if (!songBook.getSongBook().isEmpty()) {

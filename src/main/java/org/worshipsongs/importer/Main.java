@@ -23,7 +23,7 @@ public class Main
         if (new File(args[0]).exists()) {
             if (new File(args[1]).exists()) {
                 if (new File(args[0]).listFiles().length > 0) {
-                    songService.parseAndInsertSong(args[0] + "/", args[1]);
+                    songService.parseAndInsertSongs(args[0] + "/", args[1]);
                 } else {
                     System.out.println("Have no files in songs directory.");
                 }

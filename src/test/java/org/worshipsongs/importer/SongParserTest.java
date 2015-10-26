@@ -293,7 +293,6 @@ public class SongParserTest
         song.setTitle("Lord I lift Your Name");
         song.setAlternateTitle("Lord I lift Your Name");
         song.setVerseOrder("V1 O1 C1 O2 O3");
-        song.setLyrics(lyrics);
         song.setXmlLyrics(xmlLyrics);
         song.setSearchTitle((song.getTitle() + "@" + song.getAlternateTitle()).toLowerCase());
         song.setSearchLyrics(searchLyrics);
