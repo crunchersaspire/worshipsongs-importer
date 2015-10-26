@@ -10,10 +10,10 @@ import java.util.List;
  */
 public class SongService
 {
-    SongDao songDao = new SongDao();
-    AuthorDao authorDao = new AuthorDao();
-    TopicDao topicDao = new TopicDao();
-    SongBookDao songBookDao = new SongBookDao();
+    private SongDao songDao = new SongDao();
+    private AuthorDao authorDao = new AuthorDao();
+    private TopicDao topicDao = new TopicDao();
+    private SongBookDao songBookDao = new SongBookDao();
 
     public void parseAndInsertSong(String songsDirectory, String dbFilePath) throws IOException
     {

@@ -30,18 +30,17 @@ import static java.util.logging.Level.INFO;
 
 public class SongParser
 {
-    static Logger logger = Logger.getLogger(SongParser.class.getName());
-    ClassLoader classLoader;
-    Song song = new Song();
-    Topic topic = new Topic();
-    Author author = new Author();
-    SongBook songBook = new SongBook();
+    private static Logger logger = Logger.getLogger(SongParser.class.getName());
+    private ClassLoader classLoader;
+    private Song song = new Song();
+    private Topic topic = new Topic();
+    private Author author = new Author();
+    private SongBook songBook = new SongBook();
 
     List parseSong(String input) throws IOException
     {
         List list = new ArrayList();
         classLoader = getClass().getClassLoader();
-        //String input = IOUtils.toString(classLoader.getResourceAsStream(fileName));
         song.setTitle(parseTitle(input));
         topic.setTopic(parseTopic(input));
         song.setAlternateTitle(parseAlternateTitle(input));
