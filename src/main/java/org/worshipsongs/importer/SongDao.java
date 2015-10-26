@@ -31,7 +31,7 @@ public class SongDao
         return id;
     }
 
-    boolean insertSong(Connection connection, Song song, SongBook songBook)
+    boolean insertSong(Connection connection, Song song, int songBookId)
     {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
@@ -41,7 +41,7 @@ public class SongDao
                     "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, songBook.getId());
+            preparedStatement.setInt(1, songBookId);
             preparedStatement.setString(2, song.getTitle());
             preparedStatement.setString(3, song.getAlternateTitle());
             preparedStatement.setString(4, song.getXmlLyrics());

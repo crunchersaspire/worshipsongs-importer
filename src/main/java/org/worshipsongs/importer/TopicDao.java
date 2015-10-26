@@ -28,13 +28,13 @@ public class TopicDao
         return id;
     }
 
-    boolean insertTopicSongs(Connection connection, Topic topic, int songId)
+    boolean insertTopicSongs(Connection connection, int topicId, int songId)
     {
         try {
             String query = "insert into songs_topics (song_id, topic_id) values (?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, songId);
-            preparedStatement.setInt(2, topic.getId());
+            preparedStatement.setInt(2, topicId);
             preparedStatement.executeUpdate();
             preparedStatement.close();
             return true;

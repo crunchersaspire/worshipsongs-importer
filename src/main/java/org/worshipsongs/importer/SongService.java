@@ -3,6 +3,7 @@ package org.worshipsongs.importer;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -33,40 +34,61 @@ public class SongService
     {
         Connection connection;
         DatabaseUtils databaseUtils = new DatabaseUtils();
+        int songId;
         int authorId;
         int topicId;
         int songBookId;
-        int songId;
 
         connection = databaseUtils.connectDb(openLpHome);
+        authorId = getSetInsertAuthor(author, connection);
+        topicId = getSetInsertTopic(topic, connection);
+        songBookId = getSetSongBook(songBook, connection);
 
+        if (songDao.insertSong(connection, song, songBookId)) {
+            songId = songDao.getSongId(connection, song.getTitle());
+            if (authorDao.insertAuthorSongs(connection, authorId, songId)) {
+                topicDao.insertTopicSongs(connection, topicId, songId);
+            }
+        }
+    }
+
+    int getSetInsertAuthor(Author author, Connection connection)
+    {
+        int authorId;
         authorId = getAuthorId(author.getAuthor(), connection);
         if (authorId > 0) {
             author.setId(authorId);
         } else {
-            author.setId(insertAuthor(connection, author.getAuthor()));
+            authorId = insertAuthor(connection, author.getAuthor());
+            author.setId(authorId);
         }
+        return authorId;
+    }
 
+    int getSetInsertTopic(Topic topic, Connection connection)
+    {
+        int topicId;
         topicId = getTopicId(topic.getTopic(), connection);
         if (topicId > 0) {
             topic.setId(topicId);
         } else {
-            topic.setId(insertTopic(connection, topic.getTopic()));
+            topicId = insertTopic(connection, topic.getTopic());
+            topic.setId(topicId);
         }
+        return topicId;
+    }
 
+    int getSetSongBook(SongBook songBook, Connection connection)
+    {
+        int songBookId;
         songBookId = getSongBookId(songBook.getSongBook(), connection);
         if (songBookId > 0) {
             songBook.setId(songBookId);
         } else {
-            songBook.setId(insertSongBook(connection, songBook.getSongBook()));
+            songBookId = insertSongBook(connection, songBook.getSongBook());
+            songBook.setId(songBookId);
         }
-
-        if (songDao.insertSong(connection, song, songBook)) {
-            songId = songDao.getSongId(connection, song.getTitle());
-            if (authorDao.insertAuthorSongs(connection, author, songId)) {
-                topicDao.insertTopicSongs(connection, topic, songId);
-            }
-        }
+        return songBookId;
     }
 
     int getAuthorId(String authorName, Connection connection)

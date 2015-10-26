@@ -26,12 +26,12 @@ public class AuthorDao
         return id;
     }
 
-    boolean insertAuthorSongs(Connection connection, Author author, int songId)
+    boolean insertAuthorSongs(Connection connection, int authorId, int songId)
     {
         try {
             String query = "insert into authors_songs (author_id, song_id) values (?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, author.getId());
+            preparedStatement.setInt(1, authorId);
             preparedStatement.setInt(2, songId);
             preparedStatement.executeUpdate();
             preparedStatement.close();
