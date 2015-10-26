@@ -289,6 +289,7 @@ public class SongParserTest
     public void testParseSong() throws IOException
     {
         Song song = new Song();
+        Song song1;
         song.setTitle("Lord I lift Your Name");
         song.setAlternateTitle("Lord I lift Your Name");
         song.setVerseOrder("V1 O1 C1 O2 O3");
@@ -296,13 +297,10 @@ public class SongParserTest
         song.setXmlLyrics(xmlLyrics);
         song.setSearchTitle((song.getTitle() + "@" + song.getAlternateTitle()).toLowerCase());
         song.setSearchLyrics(searchLyrics);
-        parser.parseSong("song.txt");
-    }
-
-    @Test
-    public void testReadFileAndParseSong() throws IOException
-    {
-        parser.readFileAndParseSong(this.getClass().getResource("/songs").getPath());
+        String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
+        List list = parser.parseSong(input);
+        song1 = (Song) list.get(0);
+        assertTrue(song.equals(song1));
     }
 
     @Test
@@ -325,5 +323,12 @@ public class SongParserTest
         assertEquals(verses, parser.splitVerse("[V1]\n" +
                 "[V2]\n" +
                 "[V3]"));
+        verses.clear();
+        verses.add("V1");
+        verses.add("O1");
+        verses.add("C1");
+        verses.add("O2");
+        verses.add("O3");
+        assertEquals(verses, parser.splitVerse(lyrics));
     }
 }

@@ -252,7 +252,6 @@ public class SongParser
         Matcher matcher = pattern.matcher(input);
         List verses = new ArrayList();
         while (matcher.find()) {
-            System.out.println(matcher.group(1));
             verses.add(matcher.group(1));
         }
         return verses;

@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 public class SongServiceTest
 {
     private SongService songService = new SongService();
+    private SongParser songParser = new SongParser();
     private ClassLoader classLoader;
     private Connection connection;
     private DatabaseUtils databaseUtils = new DatabaseUtils();
@@ -30,21 +31,20 @@ public class SongServiceTest
     public void testGetAuthorId() throws IOException
     {
         String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        assertEquals(147, songService.getAuthorId(input, connection));
+        assertEquals(147, songService.getAuthorId(songParser.parseAuthor(input), connection));
     }
 
     @Test
     public void testGetSongBookId() throws IOException
     {
         String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        assertEquals(4, songService.getSongBookId(input, connection));
+        assertEquals(4, songService.getSongBookId(songParser.parseSongBook(input), connection));
     }
 
     @Test
     public void testGetTopicId() throws IOException
     {
         String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        assertEquals(11, songService.getTopicId(input, connection));
+        assertEquals(11, songService.getTopicId(songParser.parseTopic(input), connection));
     }
-
 }
