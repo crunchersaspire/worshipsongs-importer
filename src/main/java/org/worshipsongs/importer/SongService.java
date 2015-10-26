@@ -2,8 +2,6 @@ package org.worshipsongs.importer;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -42,7 +40,7 @@ public class SongService
         connection = databaseUtils.connectDb(openLpHome);
         authorId = getSetInsertAuthor(author, connection);
         topicId = getSetInsertTopic(topic, connection);
-        songBookId = getSetSongBook(songBook, connection);
+        songBookId = getSetInsertSongBook(songBook, connection);
 
         if (songDao.insertSong(connection, song, songBookId)) {
             songId = songDao.getSongId(connection, song.getTitle());
@@ -57,10 +55,9 @@ public class SongService
         int authorId;
         authorId = getAuthorId(author.getAuthor(), connection);
         if (authorId > 0) {
-            author.setId(authorId);
+            return authorId;
         } else {
             authorId = insertAuthor(connection, author.getAuthor());
-            author.setId(authorId);
         }
         return authorId;
     }
@@ -70,23 +67,21 @@ public class SongService
         int topicId;
         topicId = getTopicId(topic.getTopic(), connection);
         if (topicId > 0) {
-            topic.setId(topicId);
+            return topicId;
         } else {
             topicId = insertTopic(connection, topic.getTopic());
-            topic.setId(topicId);
         }
         return topicId;
     }
 
-    int getSetSongBook(SongBook songBook, Connection connection)
+    int getSetInsertSongBook(SongBook songBook, Connection connection)
     {
         int songBookId;
         songBookId = getSongBookId(songBook.getSongBook(), connection);
         if (songBookId > 0) {
-            songBook.setId(songBookId);
+            return songBookId;
         } else {
             songBookId = insertSongBook(connection, songBook.getSongBook());
-            songBook.setId(songBookId);
         }
         return songBookId;
     }
