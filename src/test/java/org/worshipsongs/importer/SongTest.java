@@ -54,7 +54,7 @@ public class SongTest
         song.setXmlLyrics(xmlLyrics);
         song.setSearchTitle((song.getTitle()+"@"+song.getAlternateTitle()).toLowerCase());
         song.setSearchLyrics(searchLyrics);
-        song1 = parser.parseSong("song.txt");
+//        song1 = parser.parseSong("song.txt");
     }
 
     @Test

@@ -8,27 +8,27 @@ import java.sql.Statement;
 /**
  * Created by Pitchu on 10/18/2015.
  */
-public class TopicDao {
-    public int getTopicId(Connection connection, String topic)
+public class TopicDao
+{
+    int getTopicId(Connection connection, String topic)
     {
         int id = 0;
         try {
             Statement statement = null;
             statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery( "SELECT * FROM TOPICS where name = '" + topic + "';" );
-            if(resultSet.next()) {
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM TOPICS where name = '" + topic + "';");
+            if (resultSet.next()) {
                 id = resultSet.getInt("id");
             }
             resultSet.close();
             statement.close();
-        }
-        catch (Exception e) {
-            System.out.println("Exception:"+e);
+        } catch (Exception e) {
+            System.out.println("Exception:" + e);
         }
         return id;
     }
 
-    public boolean insertTopicSongs(Connection connection, Topic topic, int songId)
+    boolean insertTopicSongs(Connection connection, Topic topic, int songId)
     {
         try {
             String query = "insert into songs_topics (song_id, topic_id) values (?, ?)";
@@ -38,14 +38,13 @@ public class TopicDao {
             preparedStatement.executeUpdate();
             preparedStatement.close();
             return true;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("Exception:" + e);
             return false;
         }
     }
 
-    public int insertTopic(Connection connection, String topic)
+    int insertTopic(Connection connection, String topic)
     {
         try {
             String query = "insert into topics (name) values (?)";
@@ -53,9 +52,8 @@ public class TopicDao {
             preparedStatement.setString(1, topic);
             preparedStatement.executeUpdate();
             preparedStatement.close();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("Exception:" + e);
         }
         return getTopicId(connection, topic);
     }

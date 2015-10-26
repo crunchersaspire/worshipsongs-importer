@@ -11,27 +11,27 @@ import java.util.Date;
 /**
  * Created by Pitchu on 10/19/2015.
  */
-public class SongDao {
-    public int getSongId(Connection connection, String title)
+public class SongDao
+{
+    int getSongId(Connection connection, String title)
     {
         int id = 0;
         try {
             Statement statement = null;
             statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery( "SELECT * FROM SONGS where title = '" + title + "';" );
-            if(resultSet.next()) {
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM SONGS where title = '" + title + "';");
+            if (resultSet.next()) {
                 id = resultSet.getInt("id");
             }
             resultSet.close();
             statement.close();
-        }
-        catch (Exception e) {
-            System.out.println("Exception:"+e);
+        } catch (Exception e) {
+            System.out.println("Exception:" + e);
         }
         return id;
     }
 
-    public boolean insertSong(Connection connection, Song song, SongBook songBook)
+    boolean insertSong(Connection connection, Song song, SongBook songBook)
     {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
@@ -59,8 +59,7 @@ public class SongDao {
             preparedStatement.executeUpdate();
             preparedStatement.close();
             return true;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
