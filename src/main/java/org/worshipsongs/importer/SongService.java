@@ -44,7 +44,10 @@ public class SongService
 
         if (songDao.insertSong(connection, song, songBookId)) {
             songId = songDao.getSongId(connection, song.getTitle());
-            if (authorDao.insertAuthorSongs(connection, authorId, songId)) {
+            if (authorId != 0) {
+                authorDao.insertAuthorSongs(connection, authorId, songId);
+            }
+            if (topicId != 0) {
                 topicDao.insertTopicSongs(connection, topicId, songId);
             }
         }
