@@ -7,6 +7,7 @@ import java.sql.Connection;
  */
 public interface ISongBookDao
 {
-    int getSongBookId(Connection connection, String songBook);
-    int insertSongBook(Connection connection, String songBook);
+    SongBook getSongBook(SongBook songBook);
+
+    SongBook insertSongBook(SongBook songBook);
 }

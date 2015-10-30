@@ -7,7 +7,9 @@ import java.sql.Connection;
  */
 public interface ITopicDao
 {
-    int getTopicId(Connection connection, String topic);
-    boolean insertTopicSongs(Connection connection, int topicId, int songId);
-    int insertTopic(Connection connection, String topic);
+    Topic getTopic(Topic topic);
+
+    boolean insertTopicSongs(Song song);
+
+    Topic insertTopic(Topic topic);
 }

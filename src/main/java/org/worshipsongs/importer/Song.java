@@ -5,6 +5,7 @@ package org.worshipsongs.importer;
  */
 public class Song
 {
+    private int id;
     private String title;
     private String alternateTitle;
     private String verseOrder;
@@ -13,6 +14,9 @@ public class Song
     private String searchTitle;
     private String searchLyrics;
     private String comment;
+    private Author author;
+    private SongBook songBook;
+    private Topic topic;
 
     public String getTitle()
     {
@@ -95,5 +99,45 @@ public class Song
     public void setComment(String comment)
     {
         this.comment = comment;
+    }
+
+    public Author getAuthor()
+    {
+        return author;
+    }
+
+    public void setAuthor(Author author)
+    {
+        this.author = author;
+    }
+
+    public SongBook getSongBook()
+    {
+        return songBook;
+    }
+
+    public void setSongBook(SongBook songBook)
+    {
+        this.songBook = songBook;
+    }
+
+    public Topic getTopic()
+    {
+        return topic;
+    }
+
+    public void setTopic(Topic topic)
+    {
+        this.topic = topic;
+    }
+
+    public int getId()
+    {
+        return id;
+    }
+
+    public void setId(int id)
+    {
+        this.id = id;
     }
 }

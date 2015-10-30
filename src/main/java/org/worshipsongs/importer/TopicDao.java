@@ -8,15 +8,21 @@ import java.sql.Statement;
 /**
  * Created by Pitchu on 10/18/2015.
  */
-public class TopicDao
+public class TopicDao implements ITopicDao
 {
-    int getTopicId(Connection connection, String topic)
+    private Connection connection;
+    public TopicDao(Connection connection)
+    {
+        this.connection = connection;
+    }
+
+    public Topic getTopic(Topic topic)
     {
         int id = 0;
         try {
             Statement statement = null;
             statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM TOPICS where name = '" + topic + "';");
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM TOPICS where name = '" + topic.getTopic() + "';");
             if (resultSet.next()) {
                 id = resultSet.getInt("id");
             }
@@ -25,16 +31,17 @@ public class TopicDao
         } catch (Exception e) {
             System.out.println("Exception:" + e);
         }
-        return id;
+        topic.setId(id);
+        return topic;
     }
 
-    boolean insertTopicSongs(Connection connection, int topicId, int songId)
+    public boolean insertTopicSongs(Song song)
     {
         try {
             String query = "insert into songs_topics (song_id, topic_id) values (?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, songId);
-            preparedStatement.setInt(2, topicId);
+            preparedStatement.setInt(1, song.getId());
+            preparedStatement.setInt(2, song.getTopic().getId());
             preparedStatement.executeUpdate();
             preparedStatement.close();
             return true;
@@ -44,17 +51,17 @@ public class TopicDao
         }
     }
 
-    int insertTopic(Connection connection, String topic)
+    public Topic insertTopic(Topic topic)
     {
         try {
             String query = "insert into topics (name) values (?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, topic);
+            preparedStatement.setString(1, topic.getTopic());
             preparedStatement.executeUpdate();
             preparedStatement.close();
         } catch (Exception e) {
             System.out.println("Exception:" + e);
         }
-        return getTopicId(connection, topic);
+        return getTopic(topic);
     }
 }

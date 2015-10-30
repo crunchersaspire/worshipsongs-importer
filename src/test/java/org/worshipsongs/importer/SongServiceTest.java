@@ -28,23 +28,26 @@ public class SongServiceTest
     }
 
     @Test
-    public void testGetAuthorId() throws IOException
+    public void testFindOrCreateAuthor() throws IOException
     {
-        String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        assertEquals(147, songService.getAuthorId(songParser.parseAuthor(input), connection));
+        Author author = new Author();
+        author.setAuthor("Author Unknown");
+        assertEquals(1, songParser.findOrCreateAuthor(author));
     }
 
     @Test
-    public void testGetSongBookId() throws IOException
+    public void testFindOrCreateSongBook() throws IOException
     {
-        String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        assertEquals(4, songService.getSongBookId(songParser.parseSongBook(input), connection));
+        SongBook songBook = new SongBook();
+        songBook.setSongBook("Foo");
+        assertEquals(1, songParser.findOrCreateSongBook(songBook));
     }
 
     @Test
-    public void testGetTopicId() throws IOException
+    public void testFindOrCreateTopic() throws IOException
     {
-        String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        assertEquals(11, songService.getTopicId(songParser.parseTopic(input), connection));
+        Topic topic = new Topic();
+        topic.setTopic("Foo");
+        assertEquals(1, songParser.findOrCreateTopic(topic));
     }
 }

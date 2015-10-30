@@ -7,7 +7,9 @@ import java.sql.Connection;
  */
 public interface IAuthorDao
 {
-    int getAuthorId(Connection connection, String authorName);
-    boolean insertAuthorSongs(Connection connection, int authorId, int songId);
-    int insertAuthor(Connection connection, String displayName);
+    Author getAuthor(Author author);
+
+    boolean insertAuthorSongs(Song song);
+
+    Author insertAuthor(Author author);
 }

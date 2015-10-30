@@ -10,13 +10,19 @@ import java.sql.Statement;
  */
 public class SongBookDao implements ISongBookDao
 {
-    public int getSongBookId(Connection connection, String songBook)
+    private Connection connection;
+    public SongBookDao(Connection connection)
+    {
+        this.connection = connection;
+    }
+
+    public SongBook getSongBook(SongBook songBook)
     {
         int id = 0;
         try {
             Statement statement = null;
             statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM SONG_BOOKS where name = '" + songBook + "';");
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM SONG_BOOKS where name = '" + songBook.getSongBook() + "';");
             if (resultSet.next()) {
                 id = resultSet.getInt("id");
             }
@@ -25,21 +31,22 @@ public class SongBookDao implements ISongBookDao
         } catch (Exception e) {
             System.out.println("Exception:" + e);
         }
-        return id;
+        songBook.setId(id);
+        return songBook;
     }
 
-    public int insertSongBook(Connection connection, String songBook)
+    public SongBook insertSongBook(SongBook songBook)
     {
         try {
             String query = "insert into song_books (name, publisher) values (?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, songBook);
+            preparedStatement.setString(1, songBook.getSongBook());
             preparedStatement.setString(2, "");
             preparedStatement.executeUpdate();
             preparedStatement.close();
         } catch (Exception e) {
             System.out.println("Exception:" + e);
         }
-        return getSongBookId(connection, songBook);
+        return getSongBook(songBook);
     }
 }

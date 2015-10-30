@@ -17,6 +17,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -34,47 +35,48 @@ public class SongParser
     private Topic topic = new Topic();
     private Author author = new Author();
     private SongBook songBook = new SongBook();
+    private Connection connection;
+    private ISongDao songDao;
+    private IAuthorDao authorDao;
+    private ITopicDao topicDao;
+    private ISongBookDao songBookDao;
+    private DatabaseUtils databaseUtils = new DatabaseUtils();
 
-    List readFileAndParseSong(String songsDirectory) throws IOException
+    List readFileAndParseSong(String songsDirectory, String fileName) throws IOException
     {
         BufferedReader bufferedReader = null;
         String input = "";
         StringBuffer stringBuffer = new StringBuffer();
-        List list = new ArrayList();
+        List<Song> list;
 
-        File[] files = new File(songsDirectory).listFiles();
-        for (int i = 0; i < files.length; i++) {
-            logger.log(INFO, "Reading the file : " + files[i].getName() + "\n");
-            bufferedReader = new BufferedReader(new FileReader(songsDirectory + "/" + files[i].getName()));
-            while ((input = bufferedReader.readLine()) != null) {
-                stringBuffer.append(input);
-                stringBuffer.append("\n");
-            }
-            logger.log(INFO, "Parsing the file : " + files[i].getName() + "\n");
-            list = parseSong(stringBuffer.toString());
-            logger.log(INFO, "Parsed the file : " + files[i].getName() + "\n");
+        bufferedReader = new BufferedReader(new FileReader(songsDirectory + "/" + fileName));
+        while ((input = bufferedReader.readLine()) != null) {
+            stringBuffer.append(input);
+            stringBuffer.append("\n");
         }
+        logger.log(INFO, "Parsing the file : " + fileName + "\n");
+        list = parseSong(stringBuffer.toString());
+        logger.log(INFO, "Parsed the file : " + fileName + "\n");
         return list;
     }
 
     List parseSong(String input) throws IOException
     {
-        List list = new ArrayList();
+        List<Song> list = new ArrayList();
         classLoader = getClass().getClassLoader();
-        song.setTitle(parseTitle(input));
-        song.setAlternateTitle(parseAlternateTitle(input));
         author.setAuthor(parseAuthor(input));
-        song.setVerseOrder(parseVerseOrder(input));
         songBook.setSongBook(parseSongBook(input));
         topic.setTopic(parseTopic(input));
+        song.setTitle(parseTitle(input));
+        song.setAlternateTitle(parseAlternateTitle(input));
+        song.setAuthor(author);
+        song.setSongBook(songBook);
+        song.setTopic(topic);
+        song.setVerseOrder(parseVerseOrder(input));
         song.setXmlLyrics(getXmlLyrics(parseLyrics(input)));
         song.setSearchTitle(parseSearchTitle(parseTitle(input), parseAlternateTitle(input)));
         song.setSearchLyrics(parseSearchLyrics(parseLyrics(input)));
-        //song.setComment(parseComment(input));
         list.add(song);
-        list.add(topic);
-        list.add(author);
-        list.add(songBook);
         return list;
     }
 
@@ -258,4 +260,67 @@ public class SongParser
 //    {
 //        return comment.split("\\[comment\\]")[0].trim();
 //    }
+
+    void insertRecords(Song song, String dbDir)
+    {
+        connection = databaseUtils.connectDb(dbDir);
+        songDao = new SongDao(connection);
+        authorDao = new AuthorDao(connection);
+        topicDao = new TopicDao(connection);
+        songBookDao = new SongBookDao(connection);
+
+        author = findOrCreateAuthor(author);
+        topic = findOrCreateTopic(topic);
+        songBook = findOrCreateSongBook(songBook);
+
+        if (songDao.insertSong(song)) {
+            song = songDao.getSongId(song);
+            if (author.getId() != 0) {
+                authorDao.insertAuthorSongs(song);
+            }
+            if (topic.getId() != 0) {
+                topicDao.insertTopicSongs(song);
+            }
+        }
+    }
+
+    Author findOrCreateAuthor(Author author)
+    {
+        if (author.getAuthor().isEmpty()) {
+            author.setAuthor("Author Unknown");
+        }
+        author = authorDao.getAuthor(author);
+        if (author.getId() > 0) {
+            return author;
+        } else {
+            author = authorDao.insertAuthor(author);
+        }
+        return author;
+    }
+
+    Topic findOrCreateTopic(Topic topic)
+    {
+        if (!topic.getTopic().isEmpty()) {
+            topic = topicDao.getTopic(topic);
+            if (topic.getId() > 0) {
+                return topic;
+            } else {
+                topic = topicDao.insertTopic(topic);
+            }
+        }
+        return topic;
+    }
+
+    SongBook findOrCreateSongBook(SongBook songBook)
+    {
+        if (!songBook.getSongBook().isEmpty()) {
+            songBook = songBookDao.getSongBook(songBook);
+            if (songBook.getId() > 0) {
+                return songBook;
+            } else {
+                songBook = songBookDao.insertSongBook(songBook);
+            }
+        }
+        return songBook;
+    }
 }

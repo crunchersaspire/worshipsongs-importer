@@ -13,13 +13,19 @@ import java.util.Date;
  */
 public class SongDao implements ISongDao
 {
-    public int getSongId(Connection connection, String title)
+    private Connection connection;
+    public SongDao(Connection connection)
+    {
+        this.connection = connection;
+    }
+
+    public Song getSongId(Song song)
     {
         int id = 0;
         try {
             Statement statement = null;
             statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM SONGS where title = '" + title + "';");
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM SONGS where title = '" + song.getTitle() + "';");
             if (resultSet.next()) {
                 id = resultSet.getInt("id");
             }
@@ -28,10 +34,11 @@ public class SongDao implements ISongDao
         } catch (Exception e) {
             System.out.println("Exception:" + e);
         }
-        return id;
+        song.setId(id);
+        return song;
     }
 
-    public boolean insertSong(Connection connection, Song song, int songBookId)
+    public boolean insertSong(Song song)
     {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
@@ -41,7 +48,7 @@ public class SongDao implements ISongDao
                     "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, songBookId);
+            preparedStatement.setInt(1, song.getSongBook().getId());
             preparedStatement.setString(2, song.getTitle());
             preparedStatement.setString(3, song.getAlternateTitle());
             preparedStatement.setString(4, song.getXmlLyrics());

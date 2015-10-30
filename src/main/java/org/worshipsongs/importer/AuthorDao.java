@@ -8,13 +8,19 @@ import java.sql.*;
 
 public class AuthorDao implements IAuthorDao
 {
-    public int getAuthorId(Connection connection, String authorName)
+    private Connection connection;
+    public AuthorDao(Connection connection)
+    {
+        this.connection = connection;
+    }
+
+    public Author getAuthor(Author author)
     {
         int id = 0;
         try {
             Statement statement = null;
             statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM AUTHORS where display_name = '" + authorName + "';");
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM AUTHORS where display_name = '" + author.getAuthor() + "';");
             if (resultSet.next()) {
                 id = resultSet.getInt("id");
             }
@@ -23,16 +29,17 @@ public class AuthorDao implements IAuthorDao
         } catch (Exception e) {
             System.out.println("Exception:" + e);
         }
-        return id;
+        author.setId(id);
+        return author;
     }
 
-    public boolean insertAuthorSongs(Connection connection, int authorId, int songId)
+    public boolean insertAuthorSongs(Song song)
     {
         try {
             String query = "insert into authors_songs (author_id, song_id) values (?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, authorId);
-            preparedStatement.setInt(2, songId);
+            preparedStatement.setInt(1, song.getAuthor().getId());
+            preparedStatement.setInt(2, song.getId());
             preparedStatement.executeUpdate();
             preparedStatement.close();
             return true;
@@ -42,19 +49,19 @@ public class AuthorDao implements IAuthorDao
         }
     }
 
-    public int insertAuthor(Connection connection, String displayName)
+    public Author insertAuthor(Author author)
     {
         try {
             String query = "insert into authors (first_name, last_name, display_name) values (?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, "");
             preparedStatement.setString(2, "");
-            preparedStatement.setString(3, displayName);
+            preparedStatement.setString(3, author.getAuthor());
             preparedStatement.executeUpdate();
             preparedStatement.close();
         } catch (Exception e) {
             System.out.println("Exception:" + e);
         }
-        return getAuthorId(connection, displayName);
+        return getAuthor(author);
     }
 }
