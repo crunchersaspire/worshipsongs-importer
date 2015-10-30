@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
  */
 public class SongTest
 {
-    private SongParser parser = new SongParser();
+    private SongParser parser = new SongParser(this.getClass().getResource("/db").getPath());
     private String lyrics = "[V1]\n" +
             "Lord I lift Your name on high\n" +
             "Lord I love to sing Your praises\n" +
@@ -56,8 +56,7 @@ public class SongTest
         song.setSearchTitle((song.getTitle() + "@" + song.getAlternateTitle()).toLowerCase());
         song.setSearchLyrics(searchLyrics);
         String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        List list = parser.parseSong(input);
-        song1 = (Song) list.get(0);
+        song1 = parser.parseSong(input);
     }
 
     @Test

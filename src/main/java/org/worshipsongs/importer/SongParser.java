@@ -42,12 +42,21 @@ public class SongParser
     private ISongBookDao songBookDao;
     private DatabaseUtils databaseUtils = new DatabaseUtils();
 
-    List readFileAndParseSong(String songsDirectory, String fileName) throws IOException
+    SongParser(String dbDir)
+    {
+        connection = databaseUtils.connectDb(dbDir);
+        songDao = new SongDao(connection);
+        authorDao = new AuthorDao(connection);
+        topicDao = new TopicDao(connection);
+        songBookDao = new SongBookDao(connection);
+    }
+
+    Song readFileAndParseSong(String songsDirectory, String fileName) throws IOException
     {
         BufferedReader bufferedReader = null;
         String input = "";
         StringBuffer stringBuffer = new StringBuffer();
-        List<Song> list;
+        Song song;
 
         bufferedReader = new BufferedReader(new FileReader(songsDirectory + "/" + fileName));
         while ((input = bufferedReader.readLine()) != null) {
@@ -55,14 +64,13 @@ public class SongParser
             stringBuffer.append("\n");
         }
         logger.log(INFO, "Parsing the file : " + fileName + "\n");
-        list = parseSong(stringBuffer.toString());
+        song = parseSong(stringBuffer.toString());
         logger.log(INFO, "Parsed the file : " + fileName + "\n");
-        return list;
+        return song;
     }
 
-    List parseSong(String input) throws IOException
+    Song parseSong(String input) throws IOException
     {
-        List<Song> list = new ArrayList();
         classLoader = getClass().getClassLoader();
         author.setAuthor(parseAuthor(input));
         songBook.setSongBook(parseSongBook(input));
@@ -76,8 +84,7 @@ public class SongParser
         song.setXmlLyrics(getXmlLyrics(parseLyrics(input)));
         song.setSearchTitle(parseSearchTitle(parseTitle(input), parseAlternateTitle(input)));
         song.setSearchLyrics(parseSearchLyrics(parseLyrics(input)));
-        list.add(song);
-        return list;
+        return song;
     }
 
     String parseTitle(String input)
@@ -261,14 +268,8 @@ public class SongParser
 //        return comment.split("\\[comment\\]")[0].trim();
 //    }
 
-    void insertRecords(Song song, String dbDir)
+    void insertRecords(Song song)
     {
-        connection = databaseUtils.connectDb(dbDir);
-        songDao = new SongDao(connection);
-        authorDao = new AuthorDao(connection);
-        topicDao = new TopicDao(connection);
-        songBookDao = new SongBookDao(connection);
-
         author = findOrCreateAuthor(author);
         topic = findOrCreateTopic(topic);
         songBook = findOrCreateSongBook(songBook);

@@ -16,14 +16,12 @@ public class SongService
     private static Logger logger = Logger.getLogger(SongParser.class.getName());
     public void parseAndInsertSongs(String songsDirectory, String dbFilePath) throws IOException
     {
-        List<Song> list;
-        SongParser songParser = new SongParser();
+        SongParser songParser = new SongParser(dbFilePath);
         File[] files = new File(songsDirectory).listFiles();
         for (int i = 0; i < files.length; i++) {
             logger.log(INFO, "Reading the file : " + files[i].getName() + "\n");
-            list = songParser.readFileAndParseSong(songsDirectory, files[i].getName());
-            Song song = list.get(0);
-            songParser.insertRecords(song, dbFilePath);
+            Song song = songParser.readFileAndParseSong(songsDirectory, files[i].getName());
+            songParser.insertRecords(song);
         }
     }
 }

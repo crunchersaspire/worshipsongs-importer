@@ -1,5 +1,7 @@
 package org.worshipsongs.importer;
 
+import java.util.List;
+
 /**
  * Created by pitchumani on 10/8/15.
  */
@@ -79,10 +81,9 @@ public class Song
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(Object song)
     {
-        Song song = (Song) obj;
-        return ((song.title.equals(this.title)));
+        return ((song.equals(this.title)));
     }
 
     @Override

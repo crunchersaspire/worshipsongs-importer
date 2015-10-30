@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 
 public class SongParserTest
 {
-    private SongParser parser = new SongParser();
+    private SongParser parser = new SongParser(this.getClass().getResource("/db").getPath());
     DocumentBuilderFactory docFactory;
     DocumentBuilder docBuilder;
     Document document;
@@ -288,17 +288,23 @@ public class SongParserTest
     public void testParseSong() throws IOException
     {
         Song song = new Song();
-        Song song1;
+        Author author = new Author();
+        SongBook songBook = new SongBook();
+        Topic topic = new Topic();
+        author.setAuthor("Simon");
+        songBook.setSongBook("Today");
+        topic.setTopic("Today");
         song.setTitle("Lord I lift Your Name");
         song.setAlternateTitle("Lord I lift Your Name");
         song.setVerseOrder("V1 O1 C1 O2 O3");
+        song.setAuthor(author);
+        song.setSongBook(songBook);
+        song.setTopic(topic);
         song.setXmlLyrics(xmlLyrics);
         song.setSearchTitle((song.getTitle() + "@" + song.getAlternateTitle()).toLowerCase());
         song.setSearchLyrics(searchLyrics);
         String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        List list = parser.parseSong(input);
-        song1 = (Song) list.get(0);
-        assertTrue(song.equals(song1));
+        assertTrue(song.equals(parser.parseSong(input)));
     }
 
     @Test
@@ -335,4 +341,28 @@ public class SongParserTest
 //                "\nv=foo" +
 //                "\n"));
 //    }
+
+    @Test
+    public void testFindOrCreateAuthor() throws IOException
+    {
+        Author author = new Author();
+        author.setAuthor("Author Unknown");
+        assertEquals(1, parser.findOrCreateAuthor(author).getId());
+    }
+
+    @Test
+    public void testFindOrCreateSongBook() throws IOException
+    {
+        SongBook songBook = new SongBook();
+        songBook.setSongBook("Nandri");
+        assertEquals(1, parser.findOrCreateSongBook(songBook).getId());
+    }
+
+    @Test
+    public void testFindOrCreateTopic() throws IOException
+    {
+        Topic topic = new Topic();
+        topic.setTopic("Nandri 5");
+        assertEquals(8, parser.findOrCreateTopic(topic).getId());
+    }
 }
