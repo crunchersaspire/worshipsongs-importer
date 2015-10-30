@@ -4,7 +4,6 @@ package org.worshipsongs.importer;
  * Created by pitchumani on 10/5/15.
  */
 
-import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -18,7 +17,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -72,6 +70,7 @@ public class SongParser
         song.setXmlLyrics(getXmlLyrics(parseLyrics(input)));
         song.setSearchTitle(parseSearchTitle(parseTitle(input), parseAlternateTitle(input)));
         song.setSearchLyrics(parseSearchLyrics(parseLyrics(input)));
+        //song.setComment(parseComment(input));
         list.add(song);
         list.add(topic);
         list.add(author);
@@ -246,7 +245,7 @@ public class SongParser
 
     List findVerse(String input)
     {
-        Pattern pattern = Pattern.compile("\\[(.*?)\\]", Pattern.DOTALL);
+        Pattern pattern = Pattern.compile("\\[(.*?)\\]");
         Matcher matcher = pattern.matcher(input);
         List verses = new ArrayList();
         while (matcher.find()) {
@@ -254,4 +253,9 @@ public class SongParser
         }
         return verses;
     }
+//
+//    public String parseComment(String comment)
+//    {
+//        return comment.split("\\[comment\\]")[0].trim();
+//    }
 }

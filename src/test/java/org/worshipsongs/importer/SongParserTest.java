@@ -24,7 +24,6 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -319,9 +318,7 @@ public class SongParserTest
         verses.add("V1");
         verses.add("V2");
         verses.add("V3");
-        assertEquals(verses, parser.splitVerse("[V1]\n" +
-                "[V2]\n" +
-                "[V3]"));
+        assertEquals(verses, parser.splitVerse("[V1]\n" + "[V2]\n" + "[V3]"));
         verses.clear();
         verses.add("V1");
         verses.add("O1");
@@ -330,4 +327,12 @@ public class SongParserTest
         verses.add("O3");
         assertEquals(verses, parser.splitVerse(lyrics));
     }
+
+//    @Test
+//    public void testParseComments()
+//    {
+//        assertEquals("v=foo", parser.parseComment("[comment]" +
+//                "\nv=foo" +
+//                "\n"));
+//    }
 }

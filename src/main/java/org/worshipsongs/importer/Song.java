@@ -12,6 +12,7 @@ public class Song
     private String xmlLyrics;
     private String searchTitle;
     private String searchLyrics;
+    private String comment;
 
     public String getTitle()
     {
@@ -84,5 +85,15 @@ public class Song
     public String toString()
     {
         return "Title --> "+this.getTitle();
+    }
+
+    public String getComment()
+    {
+        return comment;
+    }
+
+    public void setComment(String comment)
+    {
+        this.comment = comment;
     }
 }

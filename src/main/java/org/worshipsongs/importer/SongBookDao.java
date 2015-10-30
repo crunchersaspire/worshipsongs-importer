@@ -8,9 +8,9 @@ import java.sql.Statement;
 /**
  * Created by Pitchu on 10/18/2015.
  */
-public class SongBookDao
+public class SongBookDao implements ISongBookDao
 {
-    int getSongBookId(Connection connection, String songBook)
+    public int getSongBookId(Connection connection, String songBook)
     {
         int id = 0;
         try {
@@ -28,7 +28,7 @@ public class SongBookDao
         return id;
     }
 
-    int insertSongBook(Connection connection, String songBook)
+    public int insertSongBook(Connection connection, String songBook)
     {
         try {
             String query = "insert into song_books (name, publisher) values (?, ?)";

@@ -6,9 +6,9 @@ import java.sql.*;
  * Created by Pitchu on 10/18/2015.
  */
 
-public class AuthorDao
+public class AuthorDao implements IAuthorDao
 {
-    int getAuthorId(Connection connection, String authorName)
+    public int getAuthorId(Connection connection, String authorName)
     {
         int id = 0;
         try {
@@ -26,7 +26,7 @@ public class AuthorDao
         return id;
     }
 
-    boolean insertAuthorSongs(Connection connection, int authorId, int songId)
+    public boolean insertAuthorSongs(Connection connection, int authorId, int songId)
     {
         try {
             String query = "insert into authors_songs (author_id, song_id) values (?, ?)";
@@ -42,7 +42,7 @@ public class AuthorDao
         }
     }
 
-     int insertAuthor(Connection connection, String displayName)
+    public int insertAuthor(Connection connection, String displayName)
     {
         try {
             String query = "insert into authors (first_name, last_name, display_name) values (?, ?, ?)";

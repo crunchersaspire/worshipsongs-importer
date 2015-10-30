@@ -11,9 +11,9 @@ import java.util.Date;
 /**
  * Created by Pitchu on 10/19/2015.
  */
-public class SongDao
+public class SongDao implements ISongDao
 {
-    int getSongId(Connection connection, String title)
+    public int getSongId(Connection connection, String title)
     {
         int id = 0;
         try {
@@ -31,7 +31,7 @@ public class SongDao
         return id;
     }
 
-    boolean insertSong(Connection connection, Song song, int songBookId)
+    public boolean insertSong(Connection connection, Song song, int songBookId)
     {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
@@ -47,6 +47,7 @@ public class SongDao
             preparedStatement.setString(4, song.getXmlLyrics());
             preparedStatement.setString(5, song.getVerseOrder());
             preparedStatement.setString(6, "");
+            //preparedStatement.setString(7, song.getComment());
             preparedStatement.setString(7, "");
             preparedStatement.setString(8, "");
             preparedStatement.setString(9, "");
