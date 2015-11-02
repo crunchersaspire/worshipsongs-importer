@@ -1,13 +1,14 @@
 package org.worshipsongs.importer;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Created by pitchumani on 10/30/15.
  */
 public interface ISongBookDao
 {
-    SongBook getSongBook(SongBook songBook);
+    SongBook findByName(String name) throws SQLException;
 
-    SongBook insertSongBook(SongBook songBook);
+    void create(SongBook songBook) throws SQLException;
 }

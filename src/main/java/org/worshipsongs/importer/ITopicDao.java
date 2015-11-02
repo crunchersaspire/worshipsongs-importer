@@ -1,15 +1,16 @@
 package org.worshipsongs.importer;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Created by pitchumani on 10/30/15.
  */
 public interface ITopicDao
 {
-    Topic getTopic(Topic topic);
+    Topic findByName(String name) throws SQLException;
 
-    boolean insertTopicSongs(Song song);
+    void createTopicSongs(Song song) throws SQLException;
 
-    Topic insertTopic(Topic topic);
+    void create(Topic topic) throws SQLException;
 }

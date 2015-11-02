@@ -18,6 +18,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -27,63 +28,56 @@ import java.util.regex.Pattern;
 
 import static java.util.logging.Level.INFO;
 
-public class SongParser
+public class SongParser implements ISongParser
 {
     private static Logger logger = Logger.getLogger(SongParser.class.getName());
     private ClassLoader classLoader;
-    private Song song = new Song();
-    private Topic topic = new Topic();
-    private Author author = new Author();
-    private SongBook songBook = new SongBook();
     private Connection connection;
-    private ISongDao songDao;
     private IAuthorDao authorDao;
     private ITopicDao topicDao;
     private ISongBookDao songBookDao;
     private DatabaseUtils databaseUtils = new DatabaseUtils();
 
-    SongParser(String dbDir)
+    public SongParser(String dbDir)
     {
         connection = databaseUtils.connectDb(dbDir);
-        songDao = new SongDao(connection);
         authorDao = new AuthorDao(connection);
         topicDao = new TopicDao(connection);
         songBookDao = new SongBookDao(connection);
     }
 
-    Song readFileAndParseSong(String songsDirectory, String fileName) throws IOException
+    public Song parseSong(File file) throws IOException, SQLException
     {
         BufferedReader bufferedReader = null;
         String input = "";
         StringBuffer stringBuffer = new StringBuffer();
         Song song;
 
-        bufferedReader = new BufferedReader(new FileReader(songsDirectory + "/" + fileName));
+        bufferedReader = new BufferedReader(new FileReader(file));
         while ((input = bufferedReader.readLine()) != null) {
             stringBuffer.append(input);
             stringBuffer.append("\n");
         }
-        logger.log(INFO, "Parsing the file : " + fileName + "\n");
-        song = parseSong(stringBuffer.toString());
-        logger.log(INFO, "Parsed the file : " + fileName + "\n");
+        logger.log(INFO, "Parsing the file : " + file.getName() + "\n");
+        song = parseSongFromText(stringBuffer.toString());
+        logger.log(INFO, "Parsed the file : " + file.getName() + "\n");
         return song;
     }
 
-    Song parseSong(String input) throws IOException
+    Song parseSongFromText(String input) throws IOException, SQLException
     {
         classLoader = getClass().getClassLoader();
-        author.setAuthor(parseAuthor(input));
-        songBook.setSongBook(parseSongBook(input));
-        topic.setTopic(parseTopic(input));
+        Song song = new Song();
         song.setTitle(parseTitle(input));
         song.setAlternateTitle(parseAlternateTitle(input));
-        song.setAuthor(author);
-        song.setSongBook(songBook);
-        song.setTopic(topic);
         song.setVerseOrder(parseVerseOrder(input));
         song.setXmlLyrics(getXmlLyrics(parseLyrics(input)));
         song.setSearchTitle(parseSearchTitle(parseTitle(input), parseAlternateTitle(input)));
         song.setSearchLyrics(parseSearchLyrics(parseLyrics(input)));
+
+        song.setAuthor(findOrCreateAuthor(parseAuthor(input)));
+        song.setSongBook(findOrCreateSongBook(parseSongBook(input)));
+        song.setTopic(findOrCreateTopic(parseTopic(input)));
         return song;
     }
 
@@ -262,64 +256,53 @@ public class SongParser
         }
         return verses;
     }
-//
-//    public String parseComment(String comment)
-//    {
-//        return comment.split("\\[comment\\]")[0].trim();
-//    }
 
-    void insertRecords(Song song)
+    String parseComment(String comment)
     {
-        author = findOrCreateAuthor(author);
-        topic = findOrCreateTopic(topic);
-        songBook = findOrCreateSongBook(songBook);
-
-        if (songDao.insertSong(song)) {
-            song = songDao.getSongId(song);
-            if (author.getId() != 0) {
-                authorDao.insertAuthorSongs(song);
-            }
-            if (topic.getId() != 0) {
-                topicDao.insertTopicSongs(song);
-            }
-        }
+        return comment.split("\\[comment\\]")[1].trim();
     }
 
-    Author findOrCreateAuthor(Author author)
+    Author findOrCreateAuthor(String authorDisplayName) throws SQLException
     {
-        if (author.getAuthor().isEmpty()) {
+        Author author = new Author();
+        if (authorDisplayName.isEmpty()) {
             author.setAuthor("Author Unknown");
         }
-        author = authorDao.getAuthor(author);
+        author = authorDao.findByDisplayName(authorDisplayName);
         if (author.getId() > 0) {
             return author;
         } else {
-            author = authorDao.insertAuthor(author);
+            authorDao.create(author);
+            author = authorDao.findByDisplayName(authorDisplayName);
         }
         return author;
     }
 
-    Topic findOrCreateTopic(Topic topic)
+    Topic findOrCreateTopic(String topicName) throws SQLException
     {
-        if (!topic.getTopic().isEmpty()) {
-            topic = topicDao.getTopic(topic);
+        Topic topic = new Topic();
+        if (!topicName.isEmpty()) {
+            topic = topicDao.findByName(topicName);
             if (topic.getId() > 0) {
                 return topic;
             } else {
-                topic = topicDao.insertTopic(topic);
+                topicDao.create(topic);
+                topic = topicDao.findByName(topicName);
             }
         }
         return topic;
     }
 
-    SongBook findOrCreateSongBook(SongBook songBook)
+    SongBook findOrCreateSongBook(String songBookName) throws SQLException
     {
-        if (!songBook.getSongBook().isEmpty()) {
-            songBook = songBookDao.getSongBook(songBook);
+        SongBook songBook = new SongBook();
+        if (!songBookName.isEmpty()) {
+            songBook = songBookDao.findByName(songBookName);
             if (songBook.getId() > 0) {
                 return songBook;
             } else {
-                songBook = songBookDao.insertSongBook(songBook);
+                songBookDao.create(songBook);
+                songBook = songBookDao.findByName(songBookName);
             }
         }
         return songBook;

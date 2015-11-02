@@ -24,6 +24,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -285,7 +286,7 @@ public class SongParserTest
     }
 
     @Test
-    public void testParseSong() throws IOException
+    public void testParseSong() throws IOException, SQLException
     {
         Song song = new Song();
         Author author = new Author();
@@ -304,7 +305,7 @@ public class SongParserTest
         song.setSearchTitle((song.getTitle() + "@" + song.getAlternateTitle()).toLowerCase());
         song.setSearchLyrics(searchLyrics);
         String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        assertTrue(song.equals(parser.parseSong(input)));
+        assertTrue(song.equals(parser.parseSongFromText(input)));
     }
 
     @Test
@@ -334,35 +335,29 @@ public class SongParserTest
         assertEquals(verses, parser.splitVerse(lyrics));
     }
 
-//    @Test
-//    public void testParseComments()
-//    {
-//        assertEquals("v=foo", parser.parseComment("[comment]" +
-//                "\nv=foo" +
-//                "\n"));
-//    }
-
     @Test
-    public void testFindOrCreateAuthor() throws IOException
+    public void testParseComments()
     {
-        Author author = new Author();
-        author.setAuthor("Author Unknown");
-        assertEquals(1, parser.findOrCreateAuthor(author).getId());
+        assertEquals("v=foo", parser.parseComment("[comment]" +
+                "\nv=foo" +
+                "\n"));
     }
 
     @Test
-    public void testFindOrCreateSongBook() throws IOException
+    public void testFindOrCreateAuthor() throws IOException, SQLException
     {
-        SongBook songBook = new SongBook();
-        songBook.setSongBook("Nandri");
-        assertEquals(1, parser.findOrCreateSongBook(songBook).getId());
+        assertEquals(1, parser.findOrCreateAuthor("Author Unknown").getId());
     }
 
     @Test
-    public void testFindOrCreateTopic() throws IOException
+    public void testFindOrCreateSongBook() throws IOException, SQLException
     {
-        Topic topic = new Topic();
-        topic.setTopic("Nandri 5");
-        assertEquals(8, parser.findOrCreateTopic(topic).getId());
+        assertEquals(1, parser.findOrCreateSongBook("Nandri").getId());
+    }
+
+    @Test
+    public void testFindOrCreateTopic() throws IOException, SQLException
+    {
+        assertEquals(8, parser.findOrCreateTopic("Nandri 5").getId());
     }
 }

@@ -3,7 +3,7 @@ package org.worshipsongs.importer;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.List;
+import java.sql.SQLException;
 import java.util.logging.Logger;
 
 import static java.util.logging.Level.INFO;
@@ -14,14 +14,18 @@ import static java.util.logging.Level.INFO;
 public class SongService
 {
     private static Logger logger = Logger.getLogger(SongParser.class.getName());
-    public void parseAndInsertSongs(String songsDirectory, String dbFilePath) throws IOException
+    private Connection connection;
+    private DatabaseUtils databaseUtils = new DatabaseUtils();
+    private SongDao songDao;
+    public void parseAndInsertSongs(String songsDirectory, String dbFilePath) throws IOException, SQLException
     {
+        connection = databaseUtils.connectDb(dbFilePath);
+        songDao = new SongDao(connection);
         SongParser songParser = new SongParser(dbFilePath);
-        File[] files = new File(songsDirectory).listFiles();
-        for (int i = 0; i < files.length; i++) {
-            logger.log(INFO, "Reading the file : " + files[i].getName() + "\n");
-            Song song = songParser.readFileAndParseSong(songsDirectory, files[i].getName());
-            songParser.insertRecords(song);
+        for (File file : new File(songsDirectory).listFiles()) {
+            logger.log(INFO, "Reading the file : " + file.getName() + "\n");
+            Song song = songParser.parseSong(file);
+            songDao.create(song);
         }
     }
 }

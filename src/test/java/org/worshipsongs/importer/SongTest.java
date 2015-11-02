@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.List;
+import java.sql.SQLException;
 
 import static org.junit.Assert.*;
 
@@ -46,7 +46,7 @@ public class SongTest
     private ClassLoader classLoader;
 
     @Before
-    public void setUp() throws IOException
+    public void setUp() throws IOException, SQLException
     {
         classLoader = getClass().getClassLoader();
         song.setTitle("Lord I lift Your Name");
@@ -56,7 +56,7 @@ public class SongTest
         song.setSearchTitle((song.getTitle() + "@" + song.getAlternateTitle()).toLowerCase());
         song.setSearchLyrics(searchLyrics);
         String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        song1 = parser.parseSong(input);
+        song1 = parser.parseSongFromText(input);
     }
 
     @Test
