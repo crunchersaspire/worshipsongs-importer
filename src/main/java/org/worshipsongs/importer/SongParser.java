@@ -36,10 +36,11 @@ public class SongParser implements ISongParser
     private IAuthorDao authorDao;
     private ITopicDao topicDao;
     private ISongBookDao songBookDao;
-    private DatabaseUtils databaseUtils = new DatabaseUtils();
+    private DatabaseUtils databaseUtils;
 
     public SongParser(String dbDir)
     {
+        databaseUtils = new DatabaseUtils();
         connection = databaseUtils.connectDb(dbDir);
         authorDao = new AuthorDao(connection);
         topicDao = new TopicDao(connection);
@@ -266,9 +267,10 @@ public class SongParser implements ISongParser
     {
         Author author = new Author();
         if (authorDisplayName.isEmpty()) {
-            author.setAuthor("Author Unknown");
+            authorDisplayName = "Author Unknown";
         }
         author = authorDao.findByDisplayName(authorDisplayName);
+        author.setAuthor(authorDisplayName);
         if (author.getId() > 0) {
             return author;
         } else {
@@ -282,7 +284,9 @@ public class SongParser implements ISongParser
     {
         Topic topic = new Topic();
         if (!topicName.isEmpty()) {
+            topic.setTopic(topicName);
             topic = topicDao.findByName(topicName);
+            topic.setTopic(topicName);
             if (topic.getId() > 0) {
                 return topic;
             } else {
@@ -298,6 +302,7 @@ public class SongParser implements ISongParser
         SongBook songBook = new SongBook();
         if (!songBookName.isEmpty()) {
             songBook = songBookDao.findByName(songBookName);
+            songBook.setSongBook(songBookName);
             if (songBook.getId() > 0) {
                 return songBook;
             } else {

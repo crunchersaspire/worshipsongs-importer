@@ -69,14 +69,12 @@ public class SongDao implements ISongDao
 
     void create(Song song) throws SQLException
     {
-        Author author = new Author();
-        Topic topic = new Topic();
-
+        insertSong(song);
         song = findByTitle(song);
-        if (author.getId() != 0) {
+        if (song.getAuthor().getId() != 0) {
             authorDao.createAuthorSong(song);
         }
-        if (topic.getId() != 0) {
+        if (song.getTopic().getId() != 0) {
             topicDao.createTopicSongs(song);
         }
     }
