@@ -6,69 +6,48 @@ import java.sql.*;
  * Created by Pitchu on 10/18/2015.
  */
 
-public class AuthorDao {
-    public Connection connectDb(String openlp_home)
+public class AuthorDao implements IAuthorDao
+{
+    private Connection connection;
+    public AuthorDao(Connection connection)
     {
-        Connection connection = null;
-        try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:" + openlp_home + "/songs.sqlite");
-        } catch ( Exception e ) {
-            System.out.println(e);
-        }
-        return  connection;
+        this.connection = connection;
     }
 
-    public int getAuthorId(Connection connection, String authorName)
+    public Author findByDisplayName(String displayName) throws SQLException
     {
+        Author author = new Author();
         int id = 0;
-        try {
-            Statement statement = null;
-            statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery( "SELECT * FROM AUTHORS where display_name = '" + authorName + "';" );
-            if(resultSet.next()) {
-                id = resultSet.getInt("id");
-            }
-            resultSet.close();
-            statement.close();
+        Statement statement = null;
+        statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM AUTHORS where display_name = '" + displayName + "';");
+        if (resultSet.next()) {
+            id = resultSet.getInt("id");
         }
-        catch (Exception e) {
-            System.out.println("Exception:"+e);
-        }
-        return id;
+        resultSet.close();
+        statement.close();
+        author.setId(id);
+        return author;
     }
 
-    public boolean insertAuthorSongs(Connection connection, Author author, int songId)
+    public void createAuthorSong(Song song) throws SQLException
     {
-        try {
-            String query = "insert into authors_songs (author_id, song_id) values (?, ?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, author.getId());
-            preparedStatement.setInt(2, songId);
-            preparedStatement.executeUpdate();
-            preparedStatement.close();
-            return true;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        String query = "insert into authors_songs (author_id, song_id) values (?, ?)";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, song.getAuthor().getId());
+        preparedStatement.setInt(2, song.getId());
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
     }
 
-    public int insertAuthor(Connection connection, String displayName)
+    public void create(Author author) throws SQLException
     {
-        try {
-            String query = "insert into authors (first_name, last_name, display_name) values (?, ?, ?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, "");
-            preparedStatement.setString(2, "");
-            preparedStatement.setString(3, displayName);
-            preparedStatement.executeUpdate();
-            preparedStatement.close();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return getAuthorId(connection, displayName);
+        String query = "insert into authors (first_name, last_name, display_name) values (?, ?, ?)";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, "");
+        preparedStatement.setString(2, "");
+        preparedStatement.setString(3, author.getAuthor());
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
     }
 }

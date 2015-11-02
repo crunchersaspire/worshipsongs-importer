@@ -38,7 +38,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.worshipsongs.importer.ParseSong</mainClass>
+                            <mainClass>org.worshipsongs.importer.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

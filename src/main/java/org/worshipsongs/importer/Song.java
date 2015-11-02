@@ -1,10 +1,13 @@
 package org.worshipsongs.importer;
 
+import java.util.List;
+
 /**
  * Created by pitchumani on 10/8/15.
  */
 public class Song
 {
+    private int id;
     private String title;
     private String alternateTitle;
     private String verseOrder;
@@ -12,6 +15,10 @@ public class Song
     private String xmlLyrics;
     private String searchTitle;
     private String searchLyrics;
+    private String comment;
+    private Author author;
+    private SongBook songBook;
+    private Topic topic;
 
     public String getTitle()
     {
@@ -41,16 +48,6 @@ public class Song
     public void setVerseOrder(String verseOrder)
     {
         this.verseOrder = verseOrder;
-    }
-
-    public String getLyrics()
-    {
-        return lyrics;
-    }
-
-    public void setLyrics(String lyrics)
-    {
-        this.lyrics = lyrics;
     }
 
     public String getXmlLyrics()
@@ -84,15 +81,64 @@ public class Song
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(Object song)
     {
-        Song song = (Song) obj;
-        return ((song.title.equals(this.title)));
+        return ((song.equals(this.title)));
     }
 
     @Override
     public String toString()
     {
         return "Title --> "+this.getTitle();
+    }
+
+    public String getComment()
+    {
+        return comment;
+    }
+
+    public void setComment(String comment)
+    {
+        this.comment = comment;
+    }
+
+    public Author getAuthor()
+    {
+        return author;
+    }
+
+    public void setAuthor(Author author)
+    {
+        this.author = author;
+    }
+
+    public SongBook getSongBook()
+    {
+        return songBook;
+    }
+
+    public void setSongBook(SongBook songBook)
+    {
+        this.songBook = songBook;
+    }
+
+    public Topic getTopic()
+    {
+        return topic;
+    }
+
+    public void setTopic(Topic topic)
+    {
+        this.topic = topic;
+    }
+
+    public int getId()
+    {
+        return id;
+    }
+
+    public void setId(int id)
+    {
+        this.id = id;
     }
 }

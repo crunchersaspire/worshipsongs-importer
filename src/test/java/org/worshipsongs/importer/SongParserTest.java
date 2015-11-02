@@ -24,23 +24,22 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class SongParserTest
 {
-    private SongParser parser = new SongParser();
+    private SongParser parser = new SongParser(this.getClass().getResource("/db").getPath());
     DocumentBuilderFactory docFactory;
     DocumentBuilder docBuilder;
     Document document;
     Transformer transformer;
     Writer out = new StringWriter();
     ClassLoader classLoader;
-    Connection connection;
-    AuthorDao authorDao = new AuthorDao();
-
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -106,7 +105,6 @@ public class SongParserTest
         document = docBuilder.newDocument();
         transformer = TransformerFactory.newInstance().newTransformer();
         classLoader = getClass().getClassLoader();
-        connection = authorDao.connectDb("/home/pitchumani");
     }
 
     @Test
@@ -240,15 +238,6 @@ public class SongParserTest
     }
 
     @Test
-    public void testParseVerseOrders()
-    {
-        assertEquals("V1", parser.splitVerseOrder("V1 V2 V3 V4")[0]);
-        assertEquals("V2", parser.splitVerseOrder("V1 V2 V3 V4")[1]);
-        assertEquals("V3", parser.splitVerseOrder("V1 V2 V3 V4")[2]);
-        assertEquals("V4", parser.splitVerseOrder("V1 V2 V3 V4")[3]);
-    }
-
-    @Test
     public void testParseVerseType()
     {
         assertEquals("v", parser.splitVerseType("V1"));
@@ -276,13 +265,13 @@ public class SongParserTest
     public void testParseVerse()
     {
         assertEquals("Lord I lift Your name on high\n" +
-                "Lord I love to sing Your praises", parser.splitVerse(lyrics)[1].trim());
+                "Lord I love to sing Your praises", parser.splitLyrics(lyrics)[1].trim());
         assertEquals("I’m so glad You're in my life\n" +
-                "I’m so glad You came to save us", parser.splitVerse(lyrics)[2].trim());
+                "I’m so glad You came to save us", parser.splitLyrics(lyrics)[2].trim());
         assertEquals("You came from heaven to earth\n" +
-                "To show the way", parser.splitVerse(lyrics)[3].trim());
+                "To show the way", parser.splitLyrics(lyrics)[3].trim());
         assertEquals("From the earth to the cross,\n" +
-                "My debts to pay", parser.splitVerse(lyrics)[4].trim());
+                "My debts to pay", parser.splitLyrics(lyrics)[4].trim());
     }
 
     @Test
@@ -297,25 +286,26 @@ public class SongParserTest
     }
 
     @Test
-    public void testParseSong() throws IOException
+    public void testParseSong() throws IOException, SQLException
     {
         Song song = new Song();
+        Author author = new Author();
+        SongBook songBook = new SongBook();
+        Topic topic = new Topic();
+        author.setAuthor("Simon");
+        songBook.setSongBook("Today");
+        topic.setTopic("Today");
         song.setTitle("Lord I lift Your Name");
         song.setAlternateTitle("Lord I lift Your Name");
         song.setVerseOrder("V1 O1 C1 O2 O3");
-        song.setLyrics(lyrics);
+        song.setAuthor(author);
+        song.setSongBook(songBook);
+        song.setTopic(topic);
         song.setXmlLyrics(xmlLyrics);
         song.setSearchTitle((song.getTitle() + "@" + song.getAlternateTitle()).toLowerCase());
         song.setSearchLyrics(searchLyrics);
-
-        Song song1 = parser.parseSong("song.txt");
-        assertTrue(song.equals(song1));
-    }
-
-    @Test
-    public void testParseSongs() throws IOException
-    {
-        parser.parseSongs(this.getClass().getResource("/songs").getPath(), this.getClass().getResource("/db").getPath());
+        String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
+        assertTrue(song.equals(parser.parseSongFromText(input)));
     }
 
     @Test
@@ -329,37 +319,45 @@ public class SongParserTest
     }
 
     @Test
-    public void testEnvironmentVariable()
+    public void testSplitVerse()
     {
-        assertEquals("", parser.getEnvironmentVariable(""));
-        assertEquals(null, parser.getEnvironmentVariable("OPENLP_HOME"));
+        List verses = new ArrayList();
+        verses.add("V1");
+        verses.add("V2");
+        verses.add("V3");
+        assertEquals(verses, parser.splitVerse("[V1]\n" + "[V2]\n" + "[V3]"));
+        verses.clear();
+        verses.add("V1");
+        verses.add("O1");
+        verses.add("C1");
+        verses.add("O2");
+        verses.add("O3");
+        assertEquals(verses, parser.splitVerse(lyrics));
     }
 
     @Test
-    public void testGetAuthorId() throws IOException
+    public void testParseComments()
     {
-        String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        assertEquals(147, parser.getAuthorId(input, connection));
+        assertEquals("v=foo", parser.parseComment("[comment]" +
+                "\nv=foo" +
+                "\n"));
     }
 
     @Test
-    public void testGetSongBookId() throws IOException
+    public void testFindOrCreateAuthor() throws IOException, SQLException
     {
-        String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        assertEquals(4, parser.getSongBookId(input, connection));
+        assertEquals(1, parser.findOrCreateAuthor("Author Unknown").getId());
     }
 
     @Test
-    public void testGetTopicId() throws IOException
+    public void testFindOrCreateSongBook() throws IOException, SQLException
     {
-        String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        assertEquals(11, parser.getTopicId(input, connection));
+        assertEquals(1, parser.findOrCreateSongBook("Nandri").getId());
     }
 
     @Test
-    public void testInsertRecords() throws IOException
+    public void testFindOrCreateTopic() throws IOException, SQLException
     {
-        String input = IOUtils.toString(classLoader.getResourceAsStream("song.txt"));
-        parser.insertRecords(input, this.getClass().getResource("/db").getPath());
+        assertEquals(8, parser.findOrCreateTopic("Nandri 5").getId());
     }
 }

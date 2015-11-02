@@ -1,62 +1,50 @@
 package org.worshipsongs.importer;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  * Created by Pitchu on 10/18/2015.
  */
-public class TopicDao {
-    public int getTopicId(Connection connection, String topic)
+public class TopicDao implements ITopicDao
+{
+    private Connection connection;
+    public TopicDao(Connection connection)
     {
+        this.connection = connection;
+    }
+
+    public Topic findByName(String name) throws SQLException
+    {
+        Topic topic = new Topic();
         int id = 0;
-        try {
-            Statement statement = null;
-            statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery( "SELECT * FROM TOPICS where name = '" + topic + "';" );
-            if(resultSet.next()) {
-                id = resultSet.getInt("id");
-            }
-            resultSet.close();
-            statement.close();
+        Statement statement = null;
+        statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM TOPICS where name = '" + name + "';");
+        if (resultSet.next()) {
+            id = resultSet.getInt("id");
         }
-        catch (Exception e) {
-            System.out.println("Exception:"+e);
-        }
-        return id;
+        resultSet.close();
+        statement.close();
+        topic.setId(id);
+        return topic;
     }
 
-    public boolean insertTopicSongs(Connection connection, Topic topic, int songId)
+    public void createTopicSongs(Song song) throws SQLException
     {
-        try {
-            String query = "insert into songs_topics (song_id, topic_id) values (?, ?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, songId);
-            preparedStatement.setInt(2, topic.getId());
-            preparedStatement.executeUpdate();
-            preparedStatement.close();
-            return true;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        String query = "insert into songs_topics (song_id, topic_id) values (?, ?)";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, song.getId());
+        preparedStatement.setInt(2, song.getTopic().getId());
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
     }
 
-    public int insertTopic(Connection connection, String topic)
+    public void create(Topic topic) throws SQLException
     {
-        try {
-            String query = "insert into topics (name) values (?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, topic);
-            preparedStatement.executeUpdate();
-            preparedStatement.close();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return getTopicId(connection, topic);
+        String query = "insert into topics (name) values (?)";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, topic.getTopic());
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
     }
 }
